@@ -1,7 +1,7 @@
 {
-  "name": "app",
+  "name": "service-quote-invoice-saas",
   "version": "1.0.0",
-  "description": "",
+  "description": "Production-ready Service Quote & Invoice SaaS web app",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -14,8 +14,16 @@
     "type": "git",
     "url": "git+https://github.com/NicolaasLabuschagne/Invoice-Generator.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "saas",
+    "invoice",
+    "quote",
+    "nextjs",
+    "supabase",
+    "prisma",
+    "tailwind"
+  ],
+  "author": "Nicolaas Labuschagne",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/NicolaasLabuschagne/Invoice-Generator/issues"
