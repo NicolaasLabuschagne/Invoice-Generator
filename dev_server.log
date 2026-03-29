@@ -11,4 +11,4 @@
  GET / 200 in 1191ms (next.js: 475ms, application-code: 715ms)
  GET /login 200 in 89ms (next.js: 22ms, application-code: 67ms)
  GET /signup 200 in 78ms (next.js: 31ms, application-code: 47ms)
-[?25h
+  Reload env: .env
