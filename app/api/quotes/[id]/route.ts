@@ -33,7 +33,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
   }
 
   await prisma.quote.delete({
-    where: { id: id, userId: user.id },
+    where: { id: id },
   })
 
   return NextResponse.json({ success: true })
