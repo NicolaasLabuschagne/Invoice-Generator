@@ -11,6 +11,17 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  if (id === 'new') {
+    return NextResponse.json({
+      clientId: '',
+      date: new Date().toISOString(),
+      eventName: '',
+      medics: 1,
+      hours: 1,
+      hourlyRate: 150,
+    })
+  }
+
   const job = await prisma.job.findFirst({
     where: { id: id, userId: user.id },
     include: { client: true },
@@ -34,6 +45,22 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
   const { clientId, date, eventName, medics, hours, hourlyRate } = await req.json()
   const totalCost = parseInt(medics) * parseFloat(hours) * parseFloat(hourlyRate)
+
+  if (id === 'new') {
+    const job = await prisma.job.create({
+      data: {
+        userId: user.id,
+        clientId,
+        date: new Date(date),
+        eventName,
+        medics: parseInt(medics),
+        hours: parseFloat(hours),
+        hourlyRate: parseFloat(hourlyRate),
+        totalCost,
+      },
+    })
+    return NextResponse.json(job)
+  }
 
   const job = await prisma.job.update({
     where: { id: id },
