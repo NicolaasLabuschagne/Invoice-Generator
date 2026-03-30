@@ -35,7 +35,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   const { status } = await req.json()
 
   const invoice = await prisma.invoice.update({
-    where: { id: id },
+    where: { id: id, userId: user.id },
     data: {
       status,
     },
@@ -54,7 +54,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
   }
 
   await prisma.invoice.delete({
-    where: { id: id },
+    where: { id: id, userId: user.id },
   })
 
   return NextResponse.json({ success: true })

@@ -21,34 +21,58 @@ export default function SettingsPage() {
   }, [])
 
   const fetchSettings = async () => {
-    const res = await fetch('/api/settings')
-    const data = await res.json()
-    setSettings(data)
-    setLoading(false)
+    try {
+      const res = await fetch('/api/settings')
+      if (res.ok) {
+        const data = await res.json()
+        setSettings(data)
+      } else {
+        console.error('Failed to fetch settings')
+      }
+    } catch (err) {
+      console.error('Error fetching settings:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newName || !newValue) return
     setSaving(true)
-    const res = await fetch('/api/settings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: newName, value: newValue }),
-    })
-    if (res.ok) {
-      setNewName('')
-      setNewValue('')
-      fetchSettings()
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newName, value: newValue }),
+      })
+      if (res.ok) {
+        setNewName('')
+        setNewValue('')
+        fetchSettings()
+      } else {
+        alert('Failed to add setting. Please try again.')
+      }
+    } catch (err) {
+      console.error('Error adding setting:', err)
+      alert('An error occurred while adding the setting.')
+    } finally {
+      setSaving(false)
     }
-    setSaving(false)
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this setting?')) return
-    const res = await fetch(`/api/settings?id=${id}`, { method: 'DELETE' })
-    if (res.ok) {
-      fetchSettings()
+    try {
+      const res = await fetch(`/api/settings?id=${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        fetchSettings()
+      } else {
+        alert('Failed to delete setting.')
+      }
+    } catch (err) {
+      console.error('Error deleting setting:', err)
+      alert('An error occurred while deleting the setting.')
     }
   }
 

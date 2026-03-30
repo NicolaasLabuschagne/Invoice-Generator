@@ -70,7 +70,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   }
 
   const job = await prisma.job.update({
-    where: { id: id },
+    where: { id: id, userId: user.id },
     data: {
       clientId,
       date: new Date(date),
@@ -97,7 +97,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
   }
 
   await prisma.job.delete({
-    where: { id: id },
+    where: { id: id, userId: user.id },
   })
 
   return NextResponse.json({ success: true })

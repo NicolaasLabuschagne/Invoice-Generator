@@ -7,20 +7,6 @@ export async function POST(req: Request) {
   const { data: { user }, error } = await supabase.auth.getUser()
 
   if (error || !user) {
-    // If user provided in body (for signup case before session is established)
-    try {
-      const body = await req.json()
-      if (body.userId && body.email) {
-        await prisma.profile.upsert({
-          where: { id: body.userId },
-          update: { email: body.email },
-          create: { id: body.userId, email: body.email },
-        })
-        return NextResponse.json({ success: true })
-      }
-    } catch (e) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
