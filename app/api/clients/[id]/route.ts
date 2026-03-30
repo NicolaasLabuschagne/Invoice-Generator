@@ -11,6 +11,16 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  if (id === 'new') {
+    return NextResponse.json({
+      name: '',
+      contactPerson: '',
+      phone: '',
+      email: '',
+      address: '',
+    })
+  }
+
   const client = await prisma.client.findFirst({
     where: { id: id, userId: user.id },
   })
@@ -33,6 +43,20 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
   const { name, contactPerson, phone, email, address } = await req.json()
 
+  if (id === 'new') {
+    const client = await prisma.client.create({
+      data: {
+        userId: user.id,
+        name,
+        contactPerson,
+        phone,
+        email,
+        address,
+      },
+    })
+    return NextResponse.json(client)
+  }
+
   const client = await prisma.client.update({
     where: { id: id, userId: user.id },
     data: {
@@ -54,6 +78,16 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  if (id === 'new') {
+    return NextResponse.json({
+      name: '',
+      contactPerson: '',
+      phone: '',
+      email: '',
+      address: '',
+    })
   }
 
   await prisma.client.delete({
