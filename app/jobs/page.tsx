@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Plus, Search, Briefcase, Calendar, Users, DollarSign, Edit, Trash2 } from 'lucide-react'
+import { Plus, Search, Briefcase, Calendar, Users, DollarSign, Edit, Trash2, FileText, FileCheck, CheckCircle, Clock } from 'lucide-react'
 import { format } from 'date-fns'
+import { useRouter } from 'next/navigation'
 
 interface Job {
   id: string
   eventName: string
   date: string
   totalCost: number
+  isComplete: boolean
+  quoteId: string | null
+  invoiceId: string | null
   client: {
     name: string
   }
@@ -19,6 +23,8 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [generating, setGenerating] = useState<string | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
     fetchJobs()
@@ -41,6 +47,36 @@ export default function JobsPage() {
     }
   }
 
+  const generateQuote = async (jobId: string) => {
+    setGenerating(jobId + '-quote')
+    const res = await fetch('/api/quotes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobIds: [jobId] }),
+    })
+    if (res.ok) {
+      router.push('/quotes')
+    } else {
+      alert('Failed to generate quote')
+    }
+    setGenerating(null)
+  }
+
+  const generateInvoice = async (jobId: string) => {
+    setGenerating(jobId + '-invoice')
+    const res = await fetch('/api/invoices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobIds: [jobId] }),
+    })
+    if (res.ok) {
+      router.push('/invoices')
+    } else {
+      alert('Failed to generate invoice')
+    }
+    setGenerating(null)
+  }
+
   const filteredJobs = jobs.filter(job =>
     job.eventName.toLowerCase().includes(search.toLowerCase()) ||
     job.client.name.toLowerCase().includes(search.toLowerCase())
@@ -55,7 +91,7 @@ export default function JobsPage() {
         </div>
         <Link
           href="/jobs/new"
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100"
         >
           <Plus className="h-5 w-5 mr-2" />
           Create Job
@@ -85,6 +121,7 @@ export default function JobsPage() {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50 text-slate-500 text-sm uppercase tracking-wider font-semibold">
+                  <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4">Event Name</th>
                   <th className="px-6 py-4">Client</th>
                   <th className="px-6 py-4">Date</th>
@@ -96,6 +133,19 @@ export default function JobsPage() {
                 {filteredJobs.map((job) => (
                   <tr key={job.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4">
+                      {job.isComplete ? (
+                        <span className="flex items-center text-green-600 font-bold text-xs uppercase">
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          Done
+                        </span>
+                      ) : (
+                        <span className="flex items-center text-orange-600 font-bold text-xs uppercase">
+                          <Clock className="h-4 w-4 mr-1" />
+                          Pending
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
                       <div className="font-bold text-slate-900">{job.eventName}</div>
                     </td>
                     <td className="px-6 py-4">
@@ -104,28 +154,48 @@ export default function JobsPage() {
                         {job.client.name}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm flex items-center text-slate-600">
-                        <Calendar className="h-4 w-4 mr-2 text-slate-400" />
-                        {format(new Date(job.date), 'MMM dd, yyyy')}
-                      </div>
+                    <td className="px-6 py-4 text-sm text-slate-600">
+                      {format(new Date(job.date), 'MMM dd, yyyy')}
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">
                       ${job.totalCost.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex justify-end items-center space-x-2">
+                        <button
+                          onClick={() => generateQuote(job.id)}
+                          disabled={!!generating || !!job.quoteId}
+                          className={`flex items-center px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            job.quoteId
+                              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                              : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+                          }`}
+                        >
+                          <FileText className="h-4 w-4 mr-1" />
+                          {job.quoteId ? 'Quoted' : (generating === job.id + '-quote' ? '...' : 'Quote')}
+                        </button>
+                        <button
+                          onClick={() => generateInvoice(job.id)}
+                          disabled={!!generating || !!job.invoiceId}
+                          className={`flex items-center px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            job.invoiceId
+                              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                              : 'bg-green-50 text-green-600 hover:bg-green-100'
+                          }`}
+                        >
+                          <FileCheck className="h-4 w-4 mr-1" />
+                          {job.invoiceId ? 'Invoiced' : (generating === job.id + '-invoice' ? '...' : 'Invoice')}
+                        </button>
+                        <div className="w-px h-4 bg-slate-200 mx-1" />
                         <Link
                           href={`/jobs/${job.id}`}
                           className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                          title="Edit Job"
                         >
                           <Edit className="h-5 w-5" />
                         </Link>
                         <button
                           onClick={() => handleDelete(job.id)}
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                          title="Delete Job"
                         >
                           <Trash2 className="h-5 w-5" />
                         </button>

@@ -43,8 +43,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { clientId, date, eventName, medics, hours, hourlyRate } = await req.json()
-  const totalCost = parseInt(medics) * parseFloat(hours) * parseFloat(hourlyRate)
+  const { clientId, date, eventName, medics, hours, hourlyRate, selectedItems, isComplete } = await req.json()
+
+  const itemsTotal = Array.isArray(selectedItems)
+    ? selectedItems.reduce((sum: number, item: any) => sum + (item.value || 0), 0)
+    : 0
+
+  const totalCost = (parseInt(medics) * parseFloat(hours) * parseFloat(hourlyRate)) + itemsTotal
 
   if (id === 'new') {
     const job = await prisma.job.create({
@@ -57,6 +62,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         hours: parseFloat(hours),
         hourlyRate: parseFloat(hourlyRate),
         totalCost,
+        selectedItems: selectedItems || [],
+        isComplete: isComplete || false,
       },
     })
     return NextResponse.json(job)
@@ -72,6 +79,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       hours: parseFloat(hours),
       hourlyRate: parseFloat(hourlyRate),
       totalCost,
+      selectedItems: selectedItems || [],
+      isComplete: isComplete || false,
     },
   })
 

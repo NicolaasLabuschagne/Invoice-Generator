@@ -12,6 +12,20 @@ export async function POST(req: Request) {
 
   const { clientId, totalAmount, jobIds } = await req.json()
 
+  let finalClientId = clientId
+  let finalTotalAmount = totalAmount
+
+  // If only jobIds are provided, fetch them to calculate total and get clientId
+  if (jobIds && jobIds.length > 0 && (!clientId || !totalAmount)) {
+    const jobs = await prisma.job.findMany({
+      where: { id: { in: jobIds }, userId: user.id }
+    })
+    if (jobs.length > 0) {
+      finalClientId = jobs[0].clientId
+      finalTotalAmount = jobs.reduce((sum, job) => sum + job.totalCost, 0)
+    }
+  }
+
   // Generate quote number Q-0001 format
   const quoteCount = await prisma.quote.count({
     where: { userId: user.id }
@@ -21,9 +35,9 @@ export async function POST(req: Request) {
   const quote = await prisma.quote.create({
     data: {
       userId: user.id,
-      clientId,
+      clientId: finalClientId,
       quoteNumber,
-      totalAmount: parseFloat(totalAmount),
+      totalAmount: parseFloat(finalTotalAmount),
       jobs: {
         connect: jobIds.map((id: string) => ({ id }))
       }

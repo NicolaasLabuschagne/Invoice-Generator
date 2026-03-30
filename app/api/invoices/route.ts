@@ -27,7 +27,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { clientId, totalAmount, status } = await req.json()
+  const { clientId, totalAmount, status, jobIds } = await req.json()
+
+  let finalClientId = clientId
+  let finalTotalAmount = totalAmount
+
+  // If only jobIds are provided, fetch them to calculate total and get clientId
+  if (jobIds && jobIds.length > 0 && (!clientId || !totalAmount)) {
+    const jobs = await prisma.job.findMany({
+      where: { id: { in: jobIds }, userId: user.id }
+    })
+    if (jobs.length > 0) {
+      finalClientId = jobs[0].clientId
+      finalTotalAmount = jobs.reduce((sum, job) => sum + job.totalCost, 0)
+    }
+  }
 
   // Generate invoice number INV-0001 format
   const invoiceCount = await prisma.invoice.count({
@@ -38,10 +52,13 @@ export async function POST(req: Request) {
   const invoice = await prisma.invoice.create({
     data: {
       userId: user.id,
-      clientId,
+      clientId: finalClientId,
       invoiceNumber,
-      totalAmount: parseFloat(totalAmount),
+      totalAmount: parseFloat(finalTotalAmount),
       status: status || 'unpaid',
+      jobs: jobIds ? {
+        connect: jobIds.map((id: string) => ({ id }))
+      } : undefined
     },
   })
 

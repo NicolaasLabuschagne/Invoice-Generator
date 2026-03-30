@@ -16,6 +16,7 @@ model Profile {
   jobs     Job[]
   quotes   Quote[]
   invoices Invoice[]
+  settings Setting[]
 
   @@map("profiles")
 }
@@ -50,6 +51,8 @@ model Job {
   hours       Float
   hourlyRate  Float    @map("hourly_rate")
   totalCost   Float    @map("total_cost")
+  selectedItems Json?   @map("selected_items")
+  isComplete  Boolean  @default(false) @map("is_complete")
   createdAt   DateTime @default(now()) @map("created_at")
 
   user    Profile  @relation(fields: [userId], references: [id])
@@ -89,4 +92,16 @@ model Invoice {
   jobs   Job[]
 
   @@map("invoices")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  name      String
+  value     Float
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user Profile @relation(fields: [userId], references: [id])
+
+  @@map("settings")
 }

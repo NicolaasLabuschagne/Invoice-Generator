@@ -8,7 +8,8 @@ import {
   Briefcase,
   FileText,
   FileCheck,
-  LogOut
+  LogOut,
+  Settings as SettingsIcon
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase-client'
 import { useRouter } from 'next/navigation'
@@ -19,6 +20,7 @@ const menuItems = [
   { name: 'Jobs', href: '/jobs', icon: Briefcase },
   { name: 'Quotes', href: '/quotes', icon: FileText },
   { name: 'Invoices', href: '/invoices', icon: FileCheck },
+  { name: 'Settings', href: '/settings', icon: SettingsIcon },
 ]
 
 export default function Sidebar() {
