@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react'
 import { Plus, Trash2, Save, Settings as SettingsIcon } from 'lucide-react'
 
-interface Setting {
+interface ServiceRate {
   id: string
   name: string
   value: number
 }
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<Setting[]>([])
+  const [settings, setSettings] = useState<ServiceRate[]>([])
   const [loading, setLoading] = useState(true)
   const [newName, setNewName] = useState('')
   const [newValue, setNewValue] = useState('')

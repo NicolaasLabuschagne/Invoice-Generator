@@ -10,7 +10,7 @@ interface Client {
   name: string
 }
 
-interface Setting {
+interface ServiceRate {
   id: string
   name: string
   value: number
@@ -27,7 +27,7 @@ export default function NewJobPage() {
     isComplete: false,
   })
   const [clients, setClients] = useState<Client[]>([])
-  const [settings, setSettings] = useState<Setting[]>([])
+  const [settings, setSettings] = useState<ServiceRate[]>([])
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

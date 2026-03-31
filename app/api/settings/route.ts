@@ -10,12 +10,12 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const settings = await prisma.setting.findMany({
+  const serviceRates = await prisma.serviceRate.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: 'asc' },
   })
 
-  return NextResponse.json(settings)
+  return NextResponse.json(serviceRates)
 }
 
 export async function POST(req: Request) {
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
 
   const { name, value } = await req.json()
 
-  const setting = await prisma.setting.create({
+  const serviceRate = await prisma.serviceRate.create({
     data: {
       userId: user.id,
       name,
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     },
   })
 
-  return NextResponse.json(setting)
+  return NextResponse.json(serviceRate)
 }
 
 export async function DELETE(req: Request) {
@@ -54,8 +54,8 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: 'Missing ID' }, { status: 400 })
   }
 
-  await prisma.setting.delete({
-    where: { id: id },
+  await prisma.serviceRate.delete({
+    where: { id: id, userId: user.id },
   })
 
   return NextResponse.json({ success: true })
