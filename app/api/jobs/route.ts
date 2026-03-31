@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { clientId, date, eventName, medics, hours, hourlyRate } = await req.json()
+  const { clientId, date, eventName, medics, hours, startTime, endTime, hourlyRate } = await req.json()
 
   const totalCost = medics * hours * hourlyRate
 
@@ -39,6 +39,8 @@ export async function POST(req: Request) {
       eventName,
       medics: parseInt(medics),
       hours: parseFloat(hours),
+      startTime,
+      endTime,
       hourlyRate: parseFloat(hourlyRate),
       totalCost,
     },

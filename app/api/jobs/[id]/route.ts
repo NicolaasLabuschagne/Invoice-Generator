@@ -18,6 +18,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       eventName: '',
       medics: 1,
       hours: 1,
+      startTime: '',
+      endTime: '',
       hourlyRate: 150,
     })
   }
@@ -43,7 +45,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { clientId, date, eventName, medics, hours, hourlyRate, selectedItems, isComplete } = await req.json()
+  const { clientId, date, eventName, medics, hours, startTime, endTime, hourlyRate, selectedItems, isComplete } = await req.json()
 
   const itemsTotal = Array.isArray(selectedItems)
     ? selectedItems.reduce((sum: number, item: any) => sum + (item.value || 0), 0)
@@ -60,6 +62,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         eventName,
         medics: parseInt(medics),
         hours: parseFloat(hours),
+        startTime,
+        endTime,
         hourlyRate: parseFloat(hourlyRate),
         totalCost,
         selectedItems: selectedItems || [],
@@ -77,6 +81,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       eventName,
       medics: parseInt(medics),
       hours: parseFloat(hours),
+      startTime,
+      endTime,
       hourlyRate: parseFloat(hourlyRate),
       totalCost,
       selectedItems: selectedItems || [],

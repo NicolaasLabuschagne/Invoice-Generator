@@ -23,6 +23,7 @@ export default function NewQuotePage() {
   const [clients, setClients] = useState<Client[]>([])
   const [availableJobs, setAvailableJobs] = useState<Job[]>([])
   const [selectedJobIds, setSelectedJobIds] = useState<string[]>([])
+  const [discount, setDiscount] = useState('0')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -36,6 +37,10 @@ export default function NewQuotePage() {
       .then(data => setAvailableJobs(data))
   }, [])
 
+  const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDiscount(e.target.value)
+  }
+
   const filteredJobs = availableJobs.filter(job => job.clientId === clientId)
 
   const toggleJobSelection = (jobId: string) => {
@@ -46,9 +51,12 @@ export default function NewQuotePage() {
     )
   }
 
-  const totalAmount = availableJobs
+  const invoiceTotal = availableJobs
     .filter(job => selectedJobIds.includes(job.id))
     .reduce((sum, job) => sum + job.totalCost, 0)
+
+  const discountAmount = (parseFloat(discount) / 100) * invoiceTotal
+  const totalAmount = invoiceTotal - discountAmount
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -64,6 +72,7 @@ export default function NewQuotePage() {
       body: JSON.stringify({
         clientId,
         totalAmount,
+        discount: parseFloat(discount),
         jobIds: selectedJobIds,
       }),
     })
@@ -163,9 +172,26 @@ export default function NewQuotePage() {
                   {clients.find(c => c.id === clientId)?.name || 'None'}
                 </span>
               </div>
-              <div className="pt-4 border-t border-slate-100 flex justify-between items-end">
-                <span className="font-bold text-slate-700">Total Amount</span>
-                <span className="text-2xl font-black text-blue-600">${totalAmount.toFixed(2)}</span>
+              <div className="pt-4 border-t border-slate-100 space-y-2">
+                <div className="flex justify-between text-slate-600">
+                  <span>Subtotal:</span>
+                  <span className="font-medium text-slate-900">${invoiceTotal.toFixed(2)}</span>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-slate-600 whitespace-nowrap">Discount (%):</span>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    className="w-20 px-2 py-1 border border-slate-200 rounded text-right focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    value={discount}
+                    onChange={handleDiscountChange}
+                  />
+                </div>
+                <div className="flex justify-between items-end pt-2">
+                  <span className="font-bold text-slate-700">Total</span>
+                  <span className="text-2xl font-black text-blue-600">${totalAmount.toFixed(2)}</span>
+                </div>
               </div>
             </div>
 

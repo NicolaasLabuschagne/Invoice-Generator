@@ -19,6 +19,8 @@ interface Profile {
   companyPhone: string | null
   invoiceTemplate: string | null
   quoteTemplate: string | null
+  bankInfo: string | null
+  licenceInfo: string | null
 }
 
 export default function SettingsPage() {
@@ -32,6 +34,8 @@ export default function SettingsPage() {
     companyPhone: '',
     invoiceTemplate: '',
     quoteTemplate: '',
+    bankInfo: '',
+    licenceInfo: '',
   })
   const [loading, setLoading] = useState(true)
   const [newName, setNewName] = useState('')
@@ -271,6 +275,26 @@ export default function SettingsPage() {
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 value={profile.companyAddress || ''}
                 onChange={(e) => setProfile({ ...profile, companyAddress: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Bank / Payment Info</label>
+              <textarea
+                placeholder="Bank Name, Acc No, Branch Code..."
+                rows={3}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={profile.bankInfo || ''}
+                onChange={(e) => setProfile({ ...profile, bankInfo: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Licence / Footer Info</label>
+              <textarea
+                placeholder="Licence nr, Registration info..."
+                rows={3}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={profile.licenceInfo || ''}
+                onChange={(e) => setProfile({ ...profile, licenceInfo: e.target.value })}
               />
             </div>
           </div>

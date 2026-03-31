@@ -23,6 +23,8 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
     eventName: '',
     medics: '1',
     hours: '1',
+    startTime: '',
+    endTime: '',
     hourlyRate: '150',
     isComplete: false,
   })
@@ -53,6 +55,8 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
         eventName: jobData.eventName,
         medics: jobData.medics.toString(),
         hours: jobData.hours.toString(),
+        startTime: jobData.startTime || '',
+        endTime: jobData.endTime || '',
         hourlyRate: jobData.hourlyRate.toString(),
         isComplete: jobData.isComplete || false,
       })
@@ -161,6 +165,28 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                 onChange={handleChange}
                 required
               />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Start Time</label>
+                <input
+                  type="time"
+                  name="startTime"
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  value={formData.startTime || ''}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">End Time</label>
+                <input
+                  type="time"
+                  name="endTime"
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  value={formData.endTime || ''}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
             <div className="flex items-center space-x-2 pt-6">
               <input

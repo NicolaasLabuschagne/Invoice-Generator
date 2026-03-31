@@ -33,7 +33,9 @@ export async function POST(req: Request) {
     companyEmail,
     companyPhone,
     invoiceTemplate,
-    quoteTemplate
+    quoteTemplate,
+    bankInfo,
+    licenceInfo
   } = await req.json()
 
   const profile = await prisma.profile.update({
@@ -47,6 +49,8 @@ export async function POST(req: Request) {
       companyPhone,
       invoiceTemplate,
       quoteTemplate,
+      bankInfo,
+      licenceInfo,
     },
   })
 

@@ -19,6 +19,8 @@ model Profile {
   companyPhone    String?         @map("company_phone")
   invoiceTemplate String?         @map("invoice_template")
   quoteTemplate   String?         @map("quote_template")
+  bankInfo        String?         @map("bank_info")
+  licenceInfo     String?         @map("licence_info")
   clients         Client[]
   invoices        Invoice[]
   jobs            Job[]
@@ -55,6 +57,8 @@ model Job {
   eventName     String   @map("event_name")
   medics        Int
   hours         Float
+  startTime     String?  @map("start_time")
+  endTime       String?  @map("end_time")
   hourlyRate    Float    @map("hourly_rate")
   totalCost     Float    @map("total_cost")
   createdAt     DateTime @default(now()) @map("created_at")
@@ -74,6 +78,7 @@ model Quote {
   clientId    String   @map("client_id")
   quoteNumber String   @map("quote_number")
   totalAmount Float    @map("total_amount")
+  discount    Float?   @default(0)
   createdAt   DateTime @default(now()) @map("created_at")
   jobs        Job[]
   client      Client   @relation(fields: [clientId], references: [id])
@@ -88,6 +93,7 @@ model Invoice {
   clientId      String   @map("client_id")
   invoiceNumber String   @map("invoice_number")
   totalAmount   Float    @map("total_amount")
+  discount      Float?   @default(0)
   status        String
   createdAt     DateTime @default(now()) @map("created_at")
   client        Client   @relation(fields: [clientId], references: [id])

@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { clientId, totalAmount, jobIds } = await req.json()
+  const { clientId, totalAmount, discount, jobIds } = await req.json()
 
   let finalClientId = clientId
   let finalTotalAmount = totalAmount
@@ -38,6 +38,7 @@ export async function POST(req: Request) {
       clientId: finalClientId,
       quoteNumber,
       totalAmount: parseFloat(finalTotalAmount),
+      discount: parseFloat(discount || 0),
       jobs: {
         connect: jobIds.map((id: string) => ({ id }))
       }
