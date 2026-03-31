@@ -92,9 +92,9 @@ export default function SettingsPage() {
         .getPublicUrl(filePath)
 
       setProfile({ ...profile, logoUrl: publicUrl })
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error uploading logo:', err)
-      alert('Failed to upload logo. Make sure you have a "public" bucket in Supabase storage.')
+      alert(`Failed to upload logo: ${err.message || 'Unknown error'}. \n\nPlease make sure you have a "public" bucket in Supabase storage and have set up RLS policies to allow uploads.`)
     } finally {
       setUploading(false)
     }
