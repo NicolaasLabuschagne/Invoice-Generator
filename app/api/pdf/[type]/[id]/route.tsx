@@ -36,7 +36,7 @@ export async function GET(
     return NextResponse.json({ error: 'Not Found' }, { status: 404 })
   }
 
-  const profile = await prisma.profile.findUnique({
+  const profile = await (prisma as any).profile.findUnique({
     where: { id: user.id },
   })
 

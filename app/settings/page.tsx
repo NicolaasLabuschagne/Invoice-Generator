@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Plus, Trash2, Save, Settings as SettingsIcon } from 'lucide-react'
+import { useEffect, useState, useRef } from 'react'
+import { Plus, Trash2, Save, Settings as SettingsIcon, Upload } from 'lucide-react'
+import { createClient } from '@/lib/supabase-client'
 
 interface Setting {
   id: string
@@ -37,6 +38,9 @@ export default function SettingsPage() {
   const [newValue, setNewValue] = useState('')
   const [saving, setSaving] = useState(false)
   const [savingProfile, setSavingProfile] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const supabase = createClient()
 
   useEffect(() => {
     fetchData()
@@ -58,6 +62,35 @@ export default function SettingsPage() {
       console.error('Error fetching data:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random()}.${fileExt}`
+      const filePath = `logos/${fileName}`
+
+      const { data, error } = await supabase.storage
+        .from('public')
+        .upload(filePath, file)
+
+      if (error) throw error
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('public')
+        .getPublicUrl(filePath)
+
+      setProfile({ ...profile, logoUrl: publicUrl })
+    } catch (err) {
+      console.error('Error uploading logo:', err)
+      alert('Failed to upload logo. Make sure you have a "public" bucket in Supabase storage.')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -170,14 +203,39 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Logo URL</label>
-              <input
-                type="text"
-                placeholder="https://example.com/logo.png"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                value={profile.logoUrl || ''}
-                onChange={(e) => setProfile({ ...profile, logoUrl: e.target.value })}
-              />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Company Logo</label>
+              <div className="flex items-center gap-4">
+                {profile.logoUrl && (
+                  <div className="h-16 w-16 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center">
+                    <img src={profile.logoUrl} alt="Logo Preview" className="max-h-full max-w-full object-contain" />
+                  </div>
+                )}
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    placeholder="https://example.com/logo.png"
+                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none mb-2"
+                    value={profile.logoUrl || ''}
+                    onChange={(e) => setProfile({ ...profile, logoUrl: e.target.value })}
+                  />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleLogoUpload}
+                  />
+                  <button
+                    type="button"
+                    disabled={uploading}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700 disabled:opacity-50"
+                  >
+                    <Upload className="h-4 w-4 mr-1" />
+                    {uploading ? 'Uploading...' : 'Upload Logo'}
+                  </button>
+                </div>
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Company Email</label>
