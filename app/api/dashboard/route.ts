@@ -16,6 +16,7 @@ export async function GET() {
     totalClients,
     activeJobs,
     recentInvoices,
+    profile
   ] = await Promise.all([
     prisma.invoice.aggregate({
       where: { userId: user.id, status: 'paid' },
@@ -36,6 +37,10 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
       take: 5,
     }),
+    prisma.profile.findUnique({
+      where: { id: user.id },
+      select: { currency: true }
+    })
   ])
 
   return NextResponse.json({
@@ -43,6 +48,7 @@ export async function GET() {
     outstandingInvoices,
     totalClients,
     activeJobs,
+    currency: profile?.currency || '$',
     recentActivity: recentInvoices.map((inv: any) => ({
       id: inv.id,
       type: 'invoice',

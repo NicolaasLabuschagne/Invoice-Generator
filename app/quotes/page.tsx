@@ -19,6 +19,7 @@ interface Quote {
 
 export default function QuotesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([])
+  const [currency, setCurrency] = useState('$')
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const router = useRouter()
@@ -28,9 +29,14 @@ export default function QuotesPage() {
   }, [])
 
   const fetchQuotes = async () => {
-    const res = await fetch('/api/quotes')
-    const data = await res.json()
-    setQuotes(data)
+    const [quotesRes, profileRes] = await Promise.all([
+      fetch('/api/quotes'),
+      fetch('/api/settings/profile')
+    ])
+    const quotesData = await quotesRes.json()
+    const profileData = await profileRes.json()
+    setQuotes(quotesData)
+    setCurrency(profileData?.currency || '$')
     setLoading(false)
   }
 
@@ -50,7 +56,7 @@ export default function QuotesPage() {
     }
   }
 
-  const filteredQuotes = quotes.filter(quote =>
+  const filteredQuotes = (Array.isArray(quotes) ? quotes : []).filter(quote =>
     quote.quoteNumber.toLowerCase().includes(search.toLowerCase()) ||
     quote.client.name.toLowerCase().includes(search.toLowerCase())
   )
@@ -116,7 +122,7 @@ export default function QuotesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">
-                      ${(quote.totalAmount * (1 - (quote.discount || 0) / 100)).toFixed(2)}
+                      {currency}{(quote.totalAmount * (1 - (quote.discount || 0) / 100)).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end space-x-2">

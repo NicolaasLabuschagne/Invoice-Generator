@@ -23,6 +23,7 @@ export default function NewQuotePage() {
   const [clients, setClients] = useState<Client[]>([])
   const [availableJobs, setAvailableJobs] = useState<Job[]>([])
   const [selectedJobIds, setSelectedJobIds] = useState<string[]>([])
+  const [currency, setCurrency] = useState('$')
   const [discount, setDiscount] = useState('0')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -35,6 +36,10 @@ export default function NewQuotePage() {
     fetch('/api/jobs')
       .then(res => res.json())
       .then(data => setAvailableJobs(data))
+
+    fetch('/api/settings/profile')
+      .then(res => res.json())
+      .then(data => setCurrency(data?.currency || '$'))
   }, [])
 
   const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +76,7 @@ export default function NewQuotePage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         clientId,
-        totalAmount,
+        totalAmount: invoiceTotal, // Send gross total, consumers apply discount
         discount: parseFloat(discount),
         jobIds: selectedJobIds,
       }),
@@ -149,7 +154,7 @@ export default function NewQuotePage() {
                         <div className="text-xs text-slate-500">{new Date(job.date).toLocaleDateString()}</div>
                       </div>
                     </div>
-                    <div className="font-bold text-slate-900">${job.totalCost.toFixed(2)}</div>
+                    <div className="font-bold text-slate-900">{currency}{job.totalCost.toFixed(2)}</div>
                   </div>
                 ))}
               </div>
@@ -175,7 +180,7 @@ export default function NewQuotePage() {
               <div className="pt-4 border-t border-slate-100 space-y-2">
                 <div className="flex justify-between text-slate-600">
                   <span>Subtotal:</span>
-                  <span className="font-medium text-slate-900">${invoiceTotal.toFixed(2)}</span>
+                  <span className="font-medium text-slate-900">{currency}{invoiceTotal.toFixed(2)}</span>
                 </div>
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-slate-600 whitespace-nowrap">Discount (%):</span>
@@ -190,7 +195,7 @@ export default function NewQuotePage() {
                 </div>
                 <div className="flex justify-between items-end pt-2">
                   <span className="font-bold text-slate-700">Total</span>
-                  <span className="text-2xl font-black text-blue-600">${totalAmount.toFixed(2)}</span>
+                  <span className="text-2xl font-black text-blue-600">{currency}{totalAmount.toFixed(2)}</span>
                 </div>
               </div>
             </div>

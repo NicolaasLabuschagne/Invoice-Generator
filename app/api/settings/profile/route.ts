@@ -35,7 +35,8 @@ export async function POST(req: Request) {
     invoiceTemplate,
     quoteTemplate,
     bankInfo,
-    licenceInfo
+    licenceInfo,
+    currency
   } = await req.json()
 
   const profile = await prisma.profile.upsert({
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
       quoteTemplate,
       bankInfo,
       licenceInfo,
+      currency,
     },
     create: {
       id: user.id,
@@ -65,6 +67,7 @@ export async function POST(req: Request) {
       quoteTemplate,
       bankInfo,
       licenceInfo,
+      currency,
     }
   })
 

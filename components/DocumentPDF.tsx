@@ -166,6 +166,7 @@ interface PDFProps {
 }
 
 const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
+  const currency = profile?.currency || '$';
   const jobs = data.jobs || [];
   const subtotal = data.totalAmount || 0;
   const discountPercent = data.discount || 0;
@@ -243,10 +244,10 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
               <Text style={[styles.cell, styles.colEvent]}>Event</Text>
               <Text style={[styles.cell, styles.colStart]}>Start</Text>
               <Text style={[styles.cell, styles.colEnd]}>End</Text>
-              <Text style={[styles.cell, styles.colRate]}>R / Hr</Text>
+              <Text style={[styles.cell, styles.colRate]}>{currency} / Hr</Text>
               <Text style={[styles.cell, styles.colMedics]}>Medics</Text>
               <Text style={[styles.cell, styles.colHrs]}>Hrs</Text>
-              <Text style={[styles.cellLast, styles.colTotal]}>Total R</Text>
+              <Text style={[styles.cellLast, styles.colTotal]}>Total {currency}</Text>
             </View>
             {jobs.map((job: any, index: number) => (
               <View key={index} style={[styles.tableRow, index === jobs.length - 1 && { borderBottomWidth: 0 }]}>
@@ -288,17 +289,17 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
             <View style={styles.totalsTable}>
               <View style={styles.totalRow}>
                 <Text>Subtotal:</Text>
-                <Text>R{subtotal.toFixed(2)}</Text>
+                <Text>{currency}{subtotal.toFixed(2)}</Text>
               </View>
               {discountPercent > 0 && (
                 <View style={styles.totalRow}>
                   <Text>Discount {discountPercent}%:</Text>
-                  <Text>-R{discountAmount.toFixed(2)}</Text>
+                  <Text>-{currency}{discountAmount.toFixed(2)}</Text>
                 </View>
               )}
               <View style={styles.grandTotalBox}>
                 <Text style={styles.grandTotalLabel}>Grand Total:</Text>
-                <Text style={styles.grandTotalValue}>R{grandTotal.toFixed(2)}</Text>
+                <Text style={styles.grandTotalValue}>{currency}{grandTotal.toFixed(2)}</Text>
               </View>
             </View>
           </View>

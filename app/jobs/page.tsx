@@ -21,6 +21,7 @@ interface Job {
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([])
+  const [currency, setCurrency] = useState('$')
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [generating, setGenerating] = useState<string | null>(null)
@@ -31,9 +32,14 @@ export default function JobsPage() {
   }, [])
 
   const fetchJobs = async () => {
-    const res = await fetch('/api/jobs')
-    const data = await res.json()
-    setJobs(data)
+    const [jobsRes, profileRes] = await Promise.all([
+      fetch('/api/jobs'),
+      fetch('/api/settings/profile')
+    ])
+    const jobsData = await jobsRes.json()
+    const profileData = await profileRes.json()
+    setJobs(jobsData)
+    setCurrency(profileData?.currency || '$')
     setLoading(false)
   }
 
@@ -77,7 +83,7 @@ export default function JobsPage() {
     setGenerating(null)
   }
 
-  const filteredJobs = jobs.filter(job =>
+  const filteredJobs = (Array.isArray(jobs) ? jobs : []).filter(job =>
     job.eventName.toLowerCase().includes(search.toLowerCase()) ||
     job.client.name.toLowerCase().includes(search.toLowerCase())
   )
@@ -158,7 +164,7 @@ export default function JobsPage() {
                       {format(new Date(job.date), 'MMM dd, yyyy')}
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">
-                      ${job.totalCost.toFixed(2)}
+                      {currency}{job.totalCost.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end items-center space-x-2">

@@ -19,6 +19,7 @@ interface DashboardData {
   outstandingInvoices: number
   totalClients: number
   activeJobs: number
+  currency: string
   recentActivity: Array<{
     id: string
     type: string
@@ -46,10 +47,9 @@ export default function DashboardPage() {
   if (!data) return <div className="p-8 text-center text-red-500">Failed to load dashboard data.</div>
 
   const stats = [
-    { name: 'Total Revenue', value: `$${data.totalRevenue.toFixed(2)}`, icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-100' },
-    { name: 'Outstanding Invoices', value: data.outstandingInvoices.toString(), icon: FileText, color: 'text-orange-600', bg: 'bg-orange-100' },
-    { name: 'Total Clients', value: data.totalClients.toString(), icon: Users, color: 'text-blue-600', bg: 'bg-blue-100' },
-    { name: 'Total Jobs', value: data.activeJobs.toString(), icon: Briefcase, color: 'text-indigo-600', bg: 'bg-indigo-100' },
+    { name: 'Outstanding Invoices', value: (data.outstandingInvoices || 0).toString(), icon: FileText, color: 'text-orange-600', bg: 'bg-orange-100' },
+    { name: 'Total Clients', value: (data.totalClients || 0).toString(), icon: Users, color: 'text-blue-600', bg: 'bg-blue-100' },
+    { name: 'Total Jobs', value: (data.activeJobs || 0).toString(), icon: Briefcase, color: 'text-indigo-600', bg: 'bg-indigo-100' },
   ]
 
   return (
@@ -64,7 +64,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat) => (
           <div key={stat.name} className="p-6 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center transition-all hover:shadow-md">
             <div className={`p-3 rounded-lg ${stat.bg} mr-4`}>
@@ -85,14 +85,14 @@ export default function DashboardPage() {
             <Link href="/invoices" className="text-sm text-blue-600 hover:underline font-medium">View all</Link>
           </div>
 
-          {data.recentActivity.length === 0 ? (
+          {!data.recentActivity || data.recentActivity.length === 0 ? (
             <div className="text-slate-400 text-center py-20 flex flex-col items-center">
               <Clock className="h-12 w-12 mb-4 opacity-20" />
               No recent activity found.
             </div>
           ) : (
             <div className="space-y-4">
-              {data.recentActivity.map((activity) => (
+              {data.recentActivity?.map((activity) => (
                 <div key={activity.id} className="flex items-center justify-between p-4 rounded-lg bg-slate-50 border border-slate-100">
                   <div className="flex items-center">
                     <div className={`p-2 rounded-full mr-4 ${activity.status === 'paid' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>
@@ -104,7 +104,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-slate-900">${activity.amount.toFixed(2)}</p>
+                    <p className="text-sm font-bold text-slate-900">{data.currency}{activity.amount.toFixed(2)}</p>
                     <p className={`text-xs font-bold uppercase ${activity.status === 'paid' ? 'text-green-600' : 'text-orange-600'}`}>
                       {activity.status}
                     </p>

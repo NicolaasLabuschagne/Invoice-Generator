@@ -21,6 +21,7 @@ model Profile {
   quoteTemplate   String?         @map("quote_template")
   bankInfo        String?         @map("bank_info")
   licenceInfo     String?         @map("licence_info")
+  currency        String?         @default("$")
   clients         Client[]
   invoices        Invoice[]
   jobs            Job[]

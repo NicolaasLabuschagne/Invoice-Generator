@@ -21,6 +21,7 @@ interface Profile {
   quoteTemplate: string | null
   bankInfo: string | null
   licenceInfo: string | null
+  currency: string | null
 }
 
 export default function SettingsPage() {
@@ -36,6 +37,7 @@ export default function SettingsPage() {
     quoteTemplate: '',
     bankInfo: '',
     licenceInfo: '',
+    currency: '$',
   })
   const [loading, setLoading] = useState(true)
   const [newName, setNewName] = useState('')
@@ -186,8 +188,9 @@ export default function SettingsPage() {
         <form onSubmit={handleProfileUpdate} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Company Name</label>
+              <label htmlFor="companyName" className="block text-sm font-medium text-slate-700 mb-1">Company Name</label>
               <input
+                id="companyName"
                 type="text"
                 placeholder="Service SaaS Corp"
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -196,7 +199,22 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Theme Color</label>
+              <label htmlFor="currency" className="block text-sm font-medium text-slate-700 mb-1">Currency Symbol</label>
+              <select
+                id="currency"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={profile.currency || '$'}
+                onChange={(e) => setProfile({ ...profile, currency: e.target.value })}
+              >
+                <option value="$">USD ($)</option>
+                <option value="R">ZAR (R)</option>
+                <option value="€">EUR (€)</option>
+                <option value="£">GBP (£)</option>
+                <option value="A$">AUD (A$)</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="themeColor" className="block text-sm font-medium text-slate-700 mb-1">Theme Color</label>
               <div className="flex gap-2">
                 <input
                   type="color"
@@ -205,6 +223,7 @@ export default function SettingsPage() {
                   onChange={(e) => setProfile({ ...profile, themeColor: e.target.value })}
                 />
                 <input
+                  id="themeColor"
                   type="text"
                   className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   value={profile.themeColor || '#2563eb'}
@@ -213,7 +232,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Company Logo</label>
+              <label htmlFor="logoUrl" className="block text-sm font-medium text-slate-700 mb-1">Company Logo</label>
               <div className="flex items-center gap-4">
                 {profile.logoUrl && (
                   <div className="h-16 w-16 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center">
@@ -222,6 +241,7 @@ export default function SettingsPage() {
                 )}
                 <div className="flex-1">
                   <input
+                    id="logoUrl"
                     type="text"
                     placeholder="https://example.com/logo.png"
                     className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none mb-2"
@@ -248,8 +268,9 @@ export default function SettingsPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Company Email</label>
+              <label htmlFor="companyEmail" className="block text-sm font-medium text-slate-700 mb-1">Company Email</label>
               <input
+                id="companyEmail"
                 type="email"
                 placeholder="contact@company.com"
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -258,8 +279,9 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Company Phone</label>
+              <label htmlFor="companyPhone" className="block text-sm font-medium text-slate-700 mb-1">Company Phone</label>
               <input
+                id="companyPhone"
                 type="text"
                 placeholder="+1 (555) 000-0000"
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -268,8 +290,9 @@ export default function SettingsPage() {
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Company Address</label>
+              <label htmlFor="companyAddress" className="block text-sm font-medium text-slate-700 mb-1">Company Address</label>
               <textarea
+                id="companyAddress"
                 placeholder="123 Business St, City, Country"
                 rows={2}
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -278,8 +301,9 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Bank / Payment Info</label>
+              <label htmlFor="bankInfo" className="block text-sm font-medium text-slate-700 mb-1">Bank / Payment Info</label>
               <textarea
+                id="bankInfo"
                 placeholder="Account Name: ...&#10;Bank: ...&#10;Account Number: ...&#10;Branch Code: ..."
                 rows={4}
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -289,8 +313,9 @@ export default function SettingsPage() {
               <p className="mt-1 text-xs text-slate-500 italic">This will appear in the 'Payment Info' section of your documents.</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Licence / Footer Info</label>
+              <label htmlFor="licenceInfo" className="block text-sm font-medium text-slate-700 mb-1">Licence / Footer Info</label>
               <textarea
+                id="licenceInfo"
                 placeholder="Licence nr, Registration info..."
                 rows={3}
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -302,8 +327,9 @@ export default function SettingsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Custom Quote Terms/Template</label>
+              <label htmlFor="quoteTemplate" className="block text-sm font-medium text-slate-700 mb-1">Custom Quote Terms/Template</label>
               <textarea
+                id="quoteTemplate"
                 placeholder="Default quote terms and conditions..."
                 rows={4}
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -312,8 +338,9 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Custom Invoice Terms/Template</label>
+              <label htmlFor="invoiceTemplate" className="block text-sm font-medium text-slate-700 mb-1">Custom Invoice Terms/Template</label>
               <textarea
+                id="invoiceTemplate"
                 placeholder="Default invoice terms and conditions..."
                 rows={4}
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -341,8 +368,9 @@ export default function SettingsPage() {
 
         <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 p-4 bg-slate-50 rounded-lg border border-slate-100">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Item Name</label>
+            <label htmlFor="newItemName" className="block text-sm font-medium text-slate-700 mb-1">Item Name</label>
             <input
+              id="newItemName"
               type="text"
               placeholder="e.g. Basic Life Support"
               className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -352,8 +380,9 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Rate ($)</label>
+            <label htmlFor="newItemRate" className="block text-sm font-medium text-slate-700 mb-1">Rate ({profile.currency || '$'})</label>
             <input
+              id="newItemRate"
               type="number"
               step="0.01"
               placeholder="0.00"
@@ -395,7 +424,7 @@ export default function SettingsPage() {
                 settings.map((setting) => (
                   <tr key={setting?.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4 font-medium">{setting?.name}</td>
-                    <td className="px-6 py-4">${setting?.value?.toFixed(2)}</td>
+                    <td className="px-6 py-4">{profile.currency || '$'}{setting?.value?.toFixed(2)}</td>
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => handleDelete(setting?.id)}

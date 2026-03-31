@@ -19,6 +19,7 @@ interface Invoice {
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [currency, setCurrency] = useState('$')
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
 
@@ -27,9 +28,14 @@ export default function InvoicesPage() {
   }, [])
 
   const fetchInvoices = async () => {
-    const res = await fetch('/api/invoices')
-    const data = await res.json()
-    setInvoices(data)
+    const [invoicesRes, profileRes] = await Promise.all([
+      fetch('/api/invoices'),
+      fetch('/api/settings/profile')
+    ])
+    const invoicesData = await invoicesRes.json()
+    const profileData = await profileRes.json()
+    setInvoices(invoicesData)
+    setCurrency(profileData?.currency || '$')
     setLoading(false)
   }
 
@@ -57,7 +63,7 @@ export default function InvoicesPage() {
     }
   }
 
-  const filteredInvoices = invoices.filter(invoice =>
+  const filteredInvoices = (Array.isArray(invoices) ? invoices : []).filter(invoice =>
     invoice.invoiceNumber.toLowerCase().includes(search.toLowerCase()) ||
     invoice.client.name.toLowerCase().includes(search.toLowerCase())
   )
@@ -118,7 +124,7 @@ export default function InvoicesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">
-                      ${(invoice.totalAmount * (1 - (invoice.discount || 0) / 100)).toFixed(2)}
+                      {currency}{(invoice.totalAmount * (1 - (invoice.discount || 0) / 100)).toFixed(2)}
                     </td>
                     <td className="px-6 py-4">
                       <button

@@ -30,6 +30,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
   })
   const [clients, setClients] = useState<Client[]>([])
   const [settings, setSettings] = useState<Setting[]>([])
+  const [currency, setCurrency] = useState('$')
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -38,17 +39,20 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
   useEffect(() => {
     const fetchData = async () => {
       const { id } = await params
-      const [clientsRes, settingsRes, jobRes] = await Promise.all([
+      const [clientsRes, settingsRes, jobRes, profileRes] = await Promise.all([
         fetch('/api/clients'),
         fetch('/api/settings'),
-        fetch(`/api/jobs/${id}`)
+        fetch(`/api/jobs/${id}`),
+        fetch('/api/settings/profile')
       ])
       const clientsData = await clientsRes.json()
       const settingsData = await settingsRes.json()
       const jobData = await jobRes.json()
+      const profileData = await profileRes.json()
 
       setClients(clientsData)
       setSettings(settingsData)
+      setCurrency(profileData?.currency || '$')
       setFormData({
         clientId: jobData.clientId,
         date: jobData.date.split('T')[0],
@@ -231,7 +235,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Hourly Rate</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">$</span>
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">{currency}</span>
                     <input
                       type="number"
                       name="hourlyRate"
@@ -272,7 +276,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                         )}
                         <span className="font-medium text-slate-700">{item.name}</span>
                       </div>
-                      <span className="font-bold text-slate-900">${item.value.toFixed(2)}</span>
+                      <span className="font-bold text-slate-900">{currency}{item.value.toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
@@ -285,11 +289,11 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
               <Calculator className="h-6 w-6 mr-3 text-blue-400" />
               <div>
                 <p className="text-sm text-slate-400 font-medium">Estimated Total</p>
-                <p className="text-xs text-slate-500">Base: ${(parseFloat(formData.medics) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)).toFixed(2)} + Items: ${itemsTotal.toFixed(2)}</p>
+                <p className="text-xs text-slate-500">Base: {currency}{(parseFloat(formData.medics) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)).toFixed(2)} + Items: {currency}{itemsTotal.toFixed(2)}</p>
               </div>
             </div>
             <div className="text-3xl font-black text-blue-400">
-              ${isNaN(totalCost) ? '0.00' : totalCost.toFixed(2)}
+              {currency}{isNaN(totalCost) ? '0.00' : totalCost.toFixed(2)}
             </div>
           </div>
 
