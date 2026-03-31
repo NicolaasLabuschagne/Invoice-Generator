@@ -9,30 +9,77 @@ interface Setting {
   value: number
 }
 
+interface Profile {
+  logoUrl: string | null
+  themeColor: string | null
+  companyName: string | null
+  companyAddress: string | null
+  companyEmail: string | null
+  companyPhone: string | null
+  invoiceTemplate: string | null
+  quoteTemplate: string | null
+}
+
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Setting[]>([])
+  const [profile, setProfile] = useState<Profile>({
+    logoUrl: '',
+    themeColor: '#2563eb',
+    companyName: '',
+    companyAddress: '',
+    companyEmail: '',
+    companyPhone: '',
+    invoiceTemplate: '',
+    quoteTemplate: '',
+  })
   const [loading, setLoading] = useState(true)
   const [newName, setNewName] = useState('')
   const [newValue, setNewValue] = useState('')
   const [saving, setSaving] = useState(false)
+  const [savingProfile, setSavingProfile] = useState(false)
 
   useEffect(() => {
-    fetchSettings()
+    fetchData()
   }, [])
 
-  const fetchSettings = async () => {
+  const fetchData = async () => {
     try {
       const res = await fetch('/api/settings')
       if (res.ok) {
         const data = await res.json()
-        setSettings(data)
+        setSettings(data.settings)
+        if (data.profile) {
+          setProfile(data.profile)
+        }
       } else {
-        console.error('Failed to fetch settings')
+        console.error('Failed to fetch data')
       }
     } catch (err) {
-      console.error('Error fetching settings:', err)
+      console.error('Error fetching data:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSavingProfile(true)
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...profile, type: 'profile' }),
+      })
+      if (res.ok) {
+        alert('Profile updated successfully!')
+      } else {
+        alert('Failed to update profile.')
+      }
+    } catch (err) {
+      console.error('Error updating profile:', err)
+      alert('An error occurred while updating the profile.')
+    } finally {
+      setSavingProfile(false)
     }
   }
 
@@ -49,7 +96,7 @@ export default function SettingsPage() {
       if (res.ok) {
         setNewName('')
         setNewValue('')
-        fetchSettings()
+        fetchData()
       } else {
         alert('Failed to add setting. Please try again.')
       }
@@ -66,7 +113,7 @@ export default function SettingsPage() {
     try {
       const res = await fetch(`/api/settings?id=${id}`, { method: 'DELETE' })
       if (res.ok) {
-        fetchSettings()
+        fetchData()
       } else {
         alert('Failed to delete setting.')
       }
@@ -79,15 +126,125 @@ export default function SettingsPage() {
   if (loading) return <div className="p-8 text-center text-slate-500">Loading settings...</div>
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 pb-12">
       <div>
         <h1 className="text-3xl font-bold text-slate-900 flex items-center">
           <SettingsIcon className="mr-3 h-8 w-8 text-blue-600" />
-          System Setup
+          Settings & Customization
         </h1>
         <p className="mt-2 text-slate-600">
-          Configure selectable items and their default rates for job creation.
+          Configure your company profile, branding, and system items.
         </p>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+        <h2 className="text-xl font-bold text-slate-900 mb-6">Company Profile & Branding</h2>
+
+        <form onSubmit={handleProfileUpdate} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Company Name</label>
+              <input
+                type="text"
+                placeholder="Service SaaS Corp"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={profile.companyName || ''}
+                onChange={(e) => setProfile({ ...profile, companyName: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Theme Color</label>
+              <div className="flex gap-2">
+                <input
+                  type="color"
+                  className="h-10 w-20 border border-slate-200 rounded-lg focus:outline-none"
+                  value={profile.themeColor || '#2563eb'}
+                  onChange={(e) => setProfile({ ...profile, themeColor: e.target.value })}
+                />
+                <input
+                  type="text"
+                  className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  value={profile.themeColor || '#2563eb'}
+                  onChange={(e) => setProfile({ ...profile, themeColor: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-1">Logo URL</label>
+              <input
+                type="text"
+                placeholder="https://example.com/logo.png"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={profile.logoUrl || ''}
+                onChange={(e) => setProfile({ ...profile, logoUrl: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Company Email</label>
+              <input
+                type="email"
+                placeholder="contact@company.com"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={profile.companyEmail || ''}
+                onChange={(e) => setProfile({ ...profile, companyEmail: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Company Phone</label>
+              <input
+                type="text"
+                placeholder="+1 (555) 000-0000"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={profile.companyPhone || ''}
+                onChange={(e) => setProfile({ ...profile, companyPhone: e.target.value })}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-1">Company Address</label>
+              <textarea
+                placeholder="123 Business St, City, Country"
+                rows={2}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={profile.companyAddress || ''}
+                onChange={(e) => setProfile({ ...profile, companyAddress: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Custom Quote Terms/Template</label>
+              <textarea
+                placeholder="Default quote terms and conditions..."
+                rows={4}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={profile.quoteTemplate || ''}
+                onChange={(e) => setProfile({ ...profile, quoteTemplate: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Custom Invoice Terms/Template</label>
+              <textarea
+                placeholder="Default invoice terms and conditions..."
+                rows={4}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                value={profile.invoiceTemplate || ''}
+                onChange={(e) => setProfile({ ...profile, invoiceTemplate: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={savingProfile}
+              className="flex items-center justify-center bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50"
+            >
+              <Save className="h-5 w-5 mr-2" />
+              {savingProfile ? 'Saving...' : 'Save Profile Settings'}
+            </button>
+          </div>
+        </form>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-8">

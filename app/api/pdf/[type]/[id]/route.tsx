@@ -36,8 +36,12 @@ export async function GET(
     return NextResponse.json({ error: 'Not Found' }, { status: 404 })
   }
 
+  const profile = await prisma.profile.findUnique({
+    where: { id: user.id },
+  })
+
   const pdfType = type === 'quote' ? 'Quote' : 'Invoice'
-  const buffer = await renderToBuffer(<DocumentPDF data={data} type={pdfType} />)
+  const buffer = await renderToBuffer(<DocumentPDF data={data} type={pdfType} profile={profile} />)
 
   return new NextResponse(buffer as any, {
     headers: {

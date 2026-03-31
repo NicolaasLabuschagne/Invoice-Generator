@@ -15,7 +15,11 @@ export async function GET() {
     orderBy: { createdAt: 'asc' },
   })
 
-  return NextResponse.json(settings)
+  const profile = await prisma.profile.findUnique({
+    where: { id: user.id },
+  })
+
+  return NextResponse.json({ settings, profile })
 }
 
 export async function POST(req: Request) {
@@ -26,7 +30,38 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { name, value } = await req.json()
+  const body = await req.json()
+
+  if (body.type === 'profile') {
+    const {
+      logoUrl,
+      themeColor,
+      companyName,
+      companyAddress,
+      companyEmail,
+      companyPhone,
+      invoiceTemplate,
+      quoteTemplate
+    } = body
+
+    const profile = await prisma.profile.update({
+      where: { id: user.id },
+      data: {
+        logoUrl,
+        themeColor,
+        companyName,
+        companyAddress,
+        companyEmail,
+        companyPhone,
+        invoiceTemplate,
+        quoteTemplate,
+      },
+    })
+
+    return NextResponse.json(profile)
+  }
+
+  const { name, value } = body
 
   const setting = await prisma.setting.create({
     data: {

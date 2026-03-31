@@ -1,14 +1,23 @@
 
-> app@1.0.0 dev
+> service-quote-invoice-saas@1.0.0 dev
 > next dev
 
 ▲ Next.js 16.2.1 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.0.2:3000
 - Environments: .env
-✓ Ready in 564ms
+✓ Ready in 533ms
 
- GET / 200 in 1191ms (next.js: 475ms, application-code: 715ms)
- GET /login 200 in 89ms (next.js: 22ms, application-code: 67ms)
- GET /signup 200 in 78ms (next.js: 31ms, application-code: 47ms)
-  Reload env: .env
+○ Compiling /settings ...
+ GET /settings 200 in 5.8s (next.js: 5.1s, application-code: 747ms)
+ GET /api/settings 401 in 1462ms (next.js: 1379ms, application-code: 83ms)
+ GET /api/settings 401 in 14ms (next.js: 5ms, application-code: 9ms)
+[browser] Failed to fetch data
+    at fetchData (app/settings/page.tsx:55:17)
+  53 |         }
+  54 |       } else {
+> 55 |         console.error('Failed to fetch data')
+     |                 ^
+  56 |       }
+  57 |     } catch (err) {
+  58 |       console.error('Error fetching data:', err) (app/settings/page.tsx:55:17)

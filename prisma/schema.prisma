@@ -12,6 +12,15 @@ model Profile {
   id    String @id
   email String @unique
 
+  logoUrl         String? @map("logo_url")
+  themeColor      String? @default("#2563eb") @map("theme_color")
+  companyName     String? @map("company_name")
+  companyAddress  String? @map("company_address")
+  companyEmail    String? @map("company_email")
+  companyPhone    String? @map("company_phone")
+  invoiceTemplate String? @map("invoice_template")
+  quoteTemplate   String? @map("quote_template")
+
   clients  Client[]
   jobs     Job[]
   quotes   Quote[]
