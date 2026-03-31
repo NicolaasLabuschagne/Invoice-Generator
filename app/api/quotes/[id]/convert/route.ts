@@ -33,6 +33,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       invoiceNumber,
       totalAmount: quote.totalAmount,
       discount: quote.discount,
+      discountAmount: quote.discountAmount,
       status: 'unpaid',
       jobs: {
         connect: quote.jobs.map(job => ({ id: job.id }))

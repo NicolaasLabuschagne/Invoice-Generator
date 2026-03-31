@@ -170,8 +170,11 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
   const jobs = data.jobs || [];
   const subtotal = data.totalAmount || 0;
   const discountPercent = data.discount || 0;
-  const discountAmount = (discountPercent / 100) * subtotal;
-  const grandTotal = subtotal - discountAmount;
+  const pctDiscountVal = (discountPercent / 100) * subtotal;
+  const fixedDiscountVal = data.discountAmount || 0;
+  let grandTotal = subtotal - pctDiscountVal - fixedDiscountVal;
+  if (grandTotal < 0) grandTotal = 0;
+  if (profile?.roundToNearest) grandTotal = Math.round(grandTotal);
 
   // Group auxiliary items
   const allAuxItems: any[] = [];
@@ -294,7 +297,13 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
               {discountPercent > 0 && (
                 <View style={styles.totalRow}>
                   <Text>Discount {discountPercent}%:</Text>
-                  <Text>-{currency}{discountAmount.toFixed(2)}</Text>
+                  <Text>-{currency}{pctDiscountVal.toFixed(2)}</Text>
+                </View>
+              )}
+              {fixedDiscountVal > 0 && (
+                <View style={styles.totalRow}>
+                  <Text>Discount ({currency}):</Text>
+                  <Text>-{currency}{fixedDiscountVal.toFixed(2)}</Text>
                 </View>
               )}
               <View style={styles.grandTotalBox}>

@@ -36,7 +36,9 @@ export async function POST(req: Request) {
     quoteTemplate,
     bankInfo,
     licenceInfo,
-    currency
+    currency,
+    medicHourlyRate,
+    roundToNearest
   } = await req.json()
 
   const profile = await prisma.profile.upsert({
@@ -53,6 +55,8 @@ export async function POST(req: Request) {
       bankInfo,
       licenceInfo,
       currency,
+      medicHourlyRate: parseFloat(medicHourlyRate),
+      roundToNearest: Boolean(roundToNearest),
     },
     create: {
       id: user.id,
@@ -68,6 +72,8 @@ export async function POST(req: Request) {
       bankInfo,
       licenceInfo,
       currency,
+      medicHourlyRate: parseFloat(medicHourlyRate),
+      roundToNearest: Boolean(roundToNearest),
     }
   })
 

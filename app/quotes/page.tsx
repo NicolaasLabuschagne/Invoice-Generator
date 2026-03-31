@@ -11,6 +11,7 @@ interface Quote {
   quoteNumber: string
   totalAmount: number
   discount: number
+  discountAmount: number
   createdAt: string
   client: {
     name: string
@@ -20,6 +21,7 @@ interface Quote {
 export default function QuotesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([])
   const [currency, setCurrency] = useState('$')
+  const [roundToNearest, setRoundToNearest] = useState(false)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const router = useRouter()
@@ -37,6 +39,7 @@ export default function QuotesPage() {
     const profileData = await profileRes.json()
     setQuotes(quotesData)
     setCurrency(profileData?.currency || '$')
+    setRoundToNearest(!!profileData?.roundToNearest)
     setLoading(false)
   }
 
@@ -122,7 +125,12 @@ export default function QuotesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">
-                      {currency}{(quote.totalAmount * (1 - (quote.discount || 0) / 100)).toFixed(2)}
+                      {currency}{(() => {
+                        let total = quote.totalAmount * (1 - (quote.discount || 0) / 100) - (quote.discountAmount || 0);
+                        if (total < 0) total = 0;
+                        if (roundToNearest) total = Math.round(total);
+                        return total.toFixed(2);
+                      })()}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end space-x-2">

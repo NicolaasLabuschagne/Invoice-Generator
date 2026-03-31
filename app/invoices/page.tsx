@@ -10,6 +10,7 @@ interface Invoice {
   invoiceNumber: string
   totalAmount: number
   discount: number
+  discountAmount: number
   status: string
   createdAt: string
   client: {
@@ -20,6 +21,7 @@ interface Invoice {
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [currency, setCurrency] = useState('$')
+  const [roundToNearest, setRoundToNearest] = useState(false)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
 
@@ -36,6 +38,7 @@ export default function InvoicesPage() {
     const profileData = await profileRes.json()
     setInvoices(invoicesData)
     setCurrency(profileData?.currency || '$')
+    setRoundToNearest(!!profileData?.roundToNearest)
     setLoading(false)
   }
 
@@ -124,7 +127,12 @@ export default function InvoicesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">
-                      {currency}{(invoice.totalAmount * (1 - (invoice.discount || 0) / 100)).toFixed(2)}
+                      {currency}{(() => {
+                        let total = invoice.totalAmount * (1 - (invoice.discount || 0) / 100) - (invoice.discountAmount || 0);
+                        if (total < 0) total = 0;
+                        if (roundToNearest) total = Math.round(total);
+                        return total.toFixed(2);
+                      })()}
                     </td>
                     <td className="px-6 py-4">
                       <button

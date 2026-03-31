@@ -22,6 +22,8 @@ model Profile {
   bankInfo        String?       @map("bank_info")
   licenceInfo     String?       @map("licence_info")
   currency        String?       @default("$")
+  medicHourlyRate Float?          @default(150) @map("medic_hourly_rate")
+  roundToNearest  Boolean         @default(false) @map("round_to_nearest")
   clients         Client[]
   invoices        Invoice[]
   jobs            Job[]
@@ -77,10 +79,11 @@ model Quote {
   id          String   @id @default(cuid())
   userId      String   @map("user_id")
   clientId    String   @map("client_id")
-  quoteNumber String   @map("quote_number")
-  totalAmount Float    @map("total_amount")
-  discount    Float?   @default(0)
-  createdAt   DateTime @default(now()) @map("created_at")
+  quoteNumber    String   @map("quote_number")
+  totalAmount    Float    @map("total_amount")
+  discount       Float?   @default(0)
+  discountAmount Float?   @default(0) @map("discount_amount")
+  createdAt      DateTime @default(now()) @map("created_at")
   jobs        Job[]
   client      Client   @relation(fields: [clientId], references: [id])
   user        Profile  @relation(fields: [userId], references: [id])
@@ -92,10 +95,11 @@ model Invoice {
   id            String   @id @default(cuid())
   userId        String   @map("user_id")
   clientId      String   @map("client_id")
-  invoiceNumber String   @map("invoice_number")
-  totalAmount   Float    @map("total_amount")
-  discount      Float?   @default(0)
-  status        String
+  invoiceNumber  String   @map("invoice_number")
+  totalAmount    Float    @map("total_amount")
+  discount       Float?   @default(0)
+  discountAmount Float?   @default(0) @map("discount_amount")
+  status         String
   createdAt     DateTime @default(now()) @map("created_at")
   client        Client   @relation(fields: [clientId], references: [id])
   user          Profile  @relation(fields: [userId], references: [id])

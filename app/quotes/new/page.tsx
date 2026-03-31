@@ -25,6 +25,8 @@ export default function NewQuotePage() {
   const [selectedJobIds, setSelectedJobIds] = useState<string[]>([])
   const [currency, setCurrency] = useState('$')
   const [discount, setDiscount] = useState('0')
+  const [discountAmountValue, setDiscountAmountValue] = useState('0')
+  const [roundToNearest, setRoundToNearest] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -39,7 +41,10 @@ export default function NewQuotePage() {
 
     fetch('/api/settings/profile')
       .then(res => res.json())
-      .then(data => setCurrency(data?.currency || '$'))
+      .then(data => {
+        setCurrency(data?.currency || '$')
+        setRoundToNearest(!!data?.roundToNearest)
+      })
   }, [])
 
   const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,8 +65,11 @@ export default function NewQuotePage() {
     .filter(job => selectedJobIds.includes(job.id))
     .reduce((sum, job) => sum + job.totalCost, 0)
 
-  const discountAmount = (parseFloat(discount) / 100) * invoiceTotal
-  const totalAmount = invoiceTotal - discountAmount
+  const pctDiscountAmount = (parseFloat(discount) / 100) * invoiceTotal
+  const fixedDiscountAmount = parseFloat(discountAmountValue || '0')
+  let totalAmount = invoiceTotal - pctDiscountAmount - fixedDiscountAmount
+  if (totalAmount < 0) totalAmount = 0
+  if (roundToNearest) totalAmount = Math.round(totalAmount)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -76,8 +84,9 @@ export default function NewQuotePage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         clientId,
-        totalAmount: invoiceTotal, // Send gross total, consumers apply discount
+        totalAmount: invoiceTotal, // Send gross total
         discount: parseFloat(discount),
+        discountAmount: parseFloat(discountAmountValue),
         jobIds: selectedJobIds,
       }),
     })
@@ -191,6 +200,16 @@ export default function NewQuotePage() {
                     className="w-20 px-2 py-1 border border-slate-200 rounded text-right focus:ring-1 focus:ring-theme focus:outline-none"
                     value={discount}
                     onChange={handleDiscountChange}
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-slate-600 whitespace-nowrap">Discount ({currency}):</span>
+                  <input
+                    type="number"
+                    min="0"
+                    className="w-24 px-2 py-1 border border-slate-200 rounded text-right focus:ring-1 focus:ring-theme focus:outline-none"
+                    value={discountAmountValue}
+                    onChange={(e) => setDiscountAmountValue(e.target.value)}
                   />
                 </div>
                 <div className="flex justify-between items-end pt-2">

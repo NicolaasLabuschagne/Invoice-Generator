@@ -31,6 +31,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
   const [clients, setClients] = useState<Client[]>([])
   const [settings, setSettings] = useState<Setting[]>([])
   const [currency, setCurrency] = useState('$')
+  const [roundToNearest, setRoundToNearest] = useState(false)
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -53,6 +54,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
       setClients(clientsData)
       setSettings(settingsData)
       setCurrency(profileData?.currency || '$')
+      setRoundToNearest(!!profileData?.roundToNearest)
       setFormData({
         clientId: jobData.clientId,
         date: jobData.date.split('T')[0],
@@ -102,8 +104,27 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value
-    setFormData({ ...formData, [e.target.name]: value })
+    const { name, value, type } = e.target;
+    const isCheckbox = type === 'checkbox';
+    const newValue = isCheckbox ? (e.target as HTMLInputElement).checked : value;
+
+    setFormData(prev => {
+      const updated = { ...prev, [name]: newValue };
+
+      // Auto-calculate hours if startTime or endTime changes
+      if (name === 'startTime' || name === 'endTime') {
+        const start = updated.startTime;
+        const end = updated.endTime;
+        if (start && end) {
+          const [sH, sM] = start.split(':').map(Number);
+          const [eH, eM] = end.split(':').map(Number);
+          let diff = (eH * 60 + eM) - (sH * 60 + sM);
+          if (diff < 0) diff += 24 * 60; // Handle overnight
+          updated.hours = (diff / 60).toFixed(2);
+        }
+      }
+      return updated;
+    });
   }
 
   const toggleItem = (id: string) => {
@@ -117,7 +138,8 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
     return sum + (item?.value || 0)
   }, 0)
 
-  const totalCost = (parseFloat(formData.medics) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)) + itemsTotal
+  let totalCost = (parseFloat(formData.medics) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)) + itemsTotal
+  if (roundToNearest) totalCost = Math.round(totalCost)
 
   if (loading) return <div className="p-8 text-center text-slate-500">Loading...</div>
 
@@ -160,8 +182,9 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+              <label htmlFor="date" className="block text-sm font-medium text-slate-700 mb-1">Date</label>
               <input
+                id="date"
                 type="date"
                 name="date"
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
@@ -172,8 +195,9 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Start Time</label>
+                <label htmlFor="startTime" className="block text-sm font-medium text-slate-700 mb-1">Start Time</label>
                 <input
+                  id="startTime"
                   type="time"
                   name="startTime"
                   className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
@@ -182,8 +206,9 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">End Time</label>
+                <label htmlFor="endTime" className="block text-sm font-medium text-slate-700 mb-1">End Time</label>
                 <input
+                  id="endTime"
                   type="time"
                   name="endTime"
                   className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
@@ -208,8 +233,9 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
               <h3 className="text-lg font-bold text-slate-900 mb-4">Base Billing</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Medics (Count)</label>
+                  <label htmlFor="medics" className="block text-sm font-medium text-slate-700 mb-1">Medics (Count)</label>
                   <input
+                    id="medics"
                     type="number"
                     name="medics"
                     min="1"
@@ -220,12 +246,13 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Hours</label>
+                  <label htmlFor="hours" className="block text-sm font-medium text-slate-700 mb-1">Hours</label>
                   <input
+                    id="hours"
                     type="number"
                     name="hours"
-                    step="0.5"
-                    min="1"
+                    step="0.01"
+                    min="0"
                     className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                     value={formData.hours || ''}
                     onChange={handleChange}
@@ -233,10 +260,11 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Hourly Rate</label>
+                  <label htmlFor="hourlyRate" className="block text-sm font-medium text-slate-700 mb-1">Hourly Rate</label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">{currency}</span>
                     <input
+                      id="hourlyRate"
                       type="number"
                       name="hourlyRate"
                       min="0"
