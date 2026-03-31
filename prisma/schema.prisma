@@ -9,65 +9,61 @@ datasource db {
 }
 
 model Profile {
-  id    String @id
-  email String @unique
-
-  logoUrl         String? @map("logo_url")
-  themeColor      String? @default("#2563eb") @map("theme_color")
-  companyName     String? @map("company_name")
-  companyAddress  String? @map("company_address")
-  companyEmail    String? @map("company_email")
-  companyPhone    String? @map("company_phone")
-  invoiceTemplate String? @map("invoice_template")
-  quoteTemplate   String? @map("quote_template")
-
-  clients  Client[]
-  jobs     Job[]
-  quotes   Quote[]
-  invoices Invoice[]
-  settings Setting[]
+  id              String          @id
+  email           String          @unique
+  logoUrl         String?         @map("logo_url")
+  themeColor      String?         @default("#2563eb") @map("theme_color")
+  companyName     String?         @map("company_name")
+  companyAddress  String?         @map("company_address")
+  companyEmail    String?         @map("company_email")
+  companyPhone    String?         @map("company_phone")
+  invoiceTemplate String?         @map("invoice_template")
+  quoteTemplate   String?         @map("quote_template")
+  clients         Client[]
+  invoices        Invoice[]
+  jobs            Job[]
+  quotes          Quote[]
+  service_rates   service_rates[]
 
   @@map("profiles")
 }
 
 model Client {
-  id             String   @id @default(cuid())
-  userId         String   @map("user_id")
-  name           String
-  contactPerson  String   @map("contact_person")
-  phone          String
-  email          String
-  address        String
-  createdAt      DateTime @default(now()) @map("created_at")
-
-  user     Profile   @relation(fields: [userId], references: [id])
-  jobs     Job[]
-  quotes   Quote[]
-  invoices Invoice[]
+  id            String    @id @default(cuid())
+  userId        String    @map("user_id")
+  name          String
+  contactPerson String    @map("contact_person")
+  phone         String
+  email         String
+  address       String
+  createdAt     DateTime  @default(now()) @map("created_at")
+  user          Profile   @relation(fields: [userId], references: [id])
+  invoices      Invoice[]
+  jobs          Job[]
+  quotes        Quote[]
 
   @@map("clients")
 }
 
 model Job {
-  id          String   @id @default(cuid())
-  userId      String   @map("user_id")
-  clientId    String   @map("client_id")
-  quoteId     String?  @map("quote_id")
-  invoiceId   String?  @map("invoice_id")
-  date        DateTime
-  eventName   String   @map("event_name")
-  medics      Int
-  hours       Float
-  hourlyRate  Float    @map("hourly_rate")
-  totalCost   Float    @map("total_cost")
-  selectedItems Json?   @map("selected_items")
-  isComplete  Boolean  @default(false) @map("is_complete")
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  user    Profile  @relation(fields: [userId], references: [id])
-  client  Client   @relation(fields: [clientId], references: [id])
-  quote   Quote?   @relation(fields: [quoteId], references: [id])
-  invoice Invoice? @relation(fields: [invoiceId], references: [id])
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  clientId      String   @map("client_id")
+  quoteId       String?  @map("quote_id")
+  invoiceId     String?  @map("invoice_id")
+  date          DateTime
+  eventName     String   @map("event_name")
+  medics        Int
+  hours         Float
+  hourlyRate    Float    @map("hourly_rate")
+  totalCost     Float    @map("total_cost")
+  createdAt     DateTime @default(now()) @map("created_at")
+  isComplete    Boolean  @default(false) @map("is_complete")
+  selectedItems Json?    @map("selected_items")
+  client        Client   @relation(fields: [clientId], references: [id])
+  invoice       Invoice? @relation(fields: [invoiceId], references: [id])
+  quote         Quote?   @relation(fields: [quoteId], references: [id])
+  user          Profile  @relation(fields: [userId], references: [id])
 
   @@map("jobs")
 }
@@ -79,10 +75,9 @@ model Quote {
   quoteNumber String   @map("quote_number")
   totalAmount Float    @map("total_amount")
   createdAt   DateTime @default(now()) @map("created_at")
-
-  user   Profile @relation(fields: [userId], references: [id])
-  client Client  @relation(fields: [clientId], references: [id])
-  jobs   Job[]
+  jobs        Job[]
+  client      Client   @relation(fields: [clientId], references: [id])
+  user        Profile  @relation(fields: [userId], references: [id])
 
   @@map("quotes")
 }
@@ -93,24 +88,20 @@ model Invoice {
   clientId      String   @map("client_id")
   invoiceNumber String   @map("invoice_number")
   totalAmount   Float    @map("total_amount")
-  status        String   // paid/unpaid
+  status        String
   createdAt     DateTime @default(now()) @map("created_at")
-
-  user   Profile @relation(fields: [userId], references: [id])
-  client Client  @relation(fields: [clientId], references: [id])
-  jobs   Job[]
+  client        Client   @relation(fields: [clientId], references: [id])
+  user        Profile  @relation(fields: [userId], references: [id])
+  jobs          Job[]
 
   @@map("invoices")
 }
 
-model Setting {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
-  name      String
-  value     Float
-  createdAt DateTime @default(now()) @map("created_at")
-
-  user Profile @relation(fields: [userId], references: [id])
-
-  @@map("settings")
+model service_rates {
+  id         String   @id @default(cuid())
+  user_id    String
+  name       String
+  value      Float
+  created_at DateTime @default(now())
+  profiles   Profile  @relation(fields: [user_id], references: [id])
 }

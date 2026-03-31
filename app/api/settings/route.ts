@@ -10,16 +10,12 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const settings = await (prisma as any).setting.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: 'asc' },
+  const settings = await prisma.service_rates.findMany({
+    where: { user_id: user.id },
+    orderBy: { created_at: 'asc' },
   })
 
-  const profile = await (prisma as any).profile.findUnique({
-    where: { id: user.id },
-  })
-
-  return NextResponse.json({ settings, profile })
+  return NextResponse.json(settings)
 }
 
 export async function POST(req: Request) {
@@ -30,42 +26,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const body = await req.json()
+  const { name, value } = await req.json()
 
-  if (body.type === 'profile') {
-    const {
-      logoUrl,
-      themeColor,
-      companyName,
-      companyAddress,
-      companyEmail,
-      companyPhone,
-      invoiceTemplate,
-      quoteTemplate
-    } = body
-
-    const profile = await (prisma as any).profile.update({
-      where: { id: user.id },
-      data: {
-        logoUrl,
-        themeColor,
-        companyName,
-        companyAddress,
-        companyEmail,
-        companyPhone,
-        invoiceTemplate,
-        quoteTemplate,
-      },
-    })
-
-    return NextResponse.json(profile)
-  }
-
-  const { name, value } = body
-
-  const setting = await (prisma as any).setting.create({
+  const setting = await prisma.service_rates.create({
     data: {
-      userId: user.id,
+      user_id: user.id,
       name,
       value: parseFloat(value),
     },
@@ -89,7 +54,7 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: 'Missing ID' }, { status: 400 })
   }
 
-  await (prisma as any).setting.delete({
+  await prisma.service_rates.delete({
     where: { id: id },
   })
 
