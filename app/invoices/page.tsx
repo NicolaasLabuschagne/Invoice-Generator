@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Plus, Search, FileText, Calendar, Users, DollarSign, Download, Trash2, CheckCircle, Clock } from 'lucide-react'
+import { Plus, Search, FileText, Calendar, Users, DollarSign, Download, Trash2, CheckCircle, Clock, Edit } from 'lucide-react'
 import { format } from 'date-fns'
 
 interface Invoice {
@@ -106,7 +106,8 @@ export default function InvoicesPage() {
                   <th className="px-6 py-4">Invoice Number</th>
                   <th className="px-6 py-4">Client</th>
                   <th className="px-6 py-4">Date</th>
-                  <th className="px-6 py-4">Amount</th>
+                  <th className="px-6 py-4">Discount</th>
+                  <th className="px-6 py-4">Total Amount</th>
                   <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
@@ -126,13 +127,25 @@ export default function InvoicesPage() {
                         {format(new Date(invoice.createdAt), 'MMM dd, yyyy')}
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-bold text-slate-900">
-                      {currency}{(() => {
-                        let total = invoice.totalAmount * (1 - (invoice.discount || 0) / 100) - (invoice.discountAmount || 0);
-                        if (total < 0) total = 0;
-                        if (roundToNearest) total = Math.round(total);
-                        return total.toFixed(2);
-                      })()}
+                    <td className="px-6 py-4">
+                      <div className="text-xs font-medium text-red-600">
+                        {invoice.discount > 0 && <div className="flex items-center">%{invoice.discount} Off</div>}
+                        {invoice.discountAmount > 0 && <div className="flex items-center">{currency}{invoice.discountAmount.toFixed(2)} Off</div>}
+                        {!(invoice.discount > 0) && !(invoice.discountAmount > 0) && <span className="text-slate-400">None</span>}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-900">
+                        {currency}{(() => {
+                          let total = invoice.totalAmount * (1 - (invoice.discount || 0) / 100) - (invoice.discountAmount || 0);
+                          if (total < 0) total = 0;
+                          if (roundToNearest) total = Math.round(total);
+                          return total.toFixed(2);
+                        })()}
+                      </div>
+                      <div className="text-[10px] text-slate-400">
+                        Gross: {currency}{invoice.totalAmount.toFixed(2)}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <button
@@ -162,6 +175,13 @@ export default function InvoicesPage() {
                         >
                           <Download className="h-5 w-5" />
                         </a>
+                      <Link
+                        href={`/invoices/${invoice.id}`}
+                        className="p-2 text-slate-400 hover:text-theme hover:bg-slate-100 rounded-lg transition-all"
+                        title="Edit Invoice"
+                      >
+                        <Edit className="h-5 w-5" />
+                      </Link>
                         <button
                           onClick={() => handleDelete(invoice.id)}
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"

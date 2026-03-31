@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Plus, Search, FileText, Calendar, Briefcase, Download, Trash2, ArrowRight } from 'lucide-react'
+import { Plus, Search, FileText, Calendar, Briefcase, Download, Trash2, ArrowRight, Edit } from 'lucide-react'
 import { format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 
@@ -106,7 +106,8 @@ export default function QuotesPage() {
                   <th className="px-6 py-4">Quote Number</th>
                   <th className="px-6 py-4">Client</th>
                   <th className="px-6 py-4">Date Created</th>
-                  <th className="px-6 py-4">Amount</th>
+                  <th className="px-6 py-4">Discount</th>
+                  <th className="px-6 py-4">Total Amount</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
@@ -124,13 +125,25 @@ export default function QuotesPage() {
                         <Calendar className="h-3 w-3 mr-1" /> {format(new Date(quote.createdAt), 'MMM dd, yyyy')}
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-bold text-slate-900">
-                      {currency}{(() => {
-                        let total = quote.totalAmount * (1 - (quote.discount || 0) / 100) - (quote.discountAmount || 0);
-                        if (total < 0) total = 0;
-                        if (roundToNearest) total = Math.round(total);
-                        return total.toFixed(2);
-                      })()}
+                    <td className="px-6 py-4">
+                      <div className="text-xs font-medium text-red-600">
+                        {quote.discount > 0 && <div className="flex items-center">%{quote.discount} Off</div>}
+                        {quote.discountAmount > 0 && <div className="flex items-center">{currency}{quote.discountAmount.toFixed(2)} Off</div>}
+                        {!(quote.discount > 0) && !(quote.discountAmount > 0) && <span className="text-slate-400">None</span>}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-900">
+                        {currency}{(() => {
+                          let total = quote.totalAmount * (1 - (quote.discount || 0) / 100) - (quote.discountAmount || 0);
+                          if (total < 0) total = 0;
+                          if (roundToNearest) total = Math.round(total);
+                          return total.toFixed(2);
+                        })()}
+                      </div>
+                      <div className="text-[10px] text-slate-400">
+                        Gross: {currency}{quote.totalAmount.toFixed(2)}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end space-x-2">
@@ -150,6 +163,13 @@ export default function QuotesPage() {
                         >
                           <Download className="h-5 w-5" />
                         </a>
+                      <Link
+                        href={`/quotes/${quote.id}`}
+                        className="p-2 text-slate-400 hover:text-theme hover:bg-slate-100 rounded-lg transition-all"
+                        title="Edit Quote"
+                      >
+                        <Edit className="h-5 w-5" />
+                      </Link>
                         <button
                           onClick={() => handleDelete(quote.id)}
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"

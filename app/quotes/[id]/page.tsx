@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Save, FileText, Check, Plus, Minus } from 'lucide-react'
 import Link from 'next/link'
@@ -18,34 +18,65 @@ interface Job {
   clientId: string
 }
 
-export default function NewQuotePage() {
+interface Quote {
+  id: string
+  quoteNumber: string
+  totalAmount: number
+  discount: number
+  discountAmount: number
+  clientId: string
+  jobs: Job[]
+}
+
+export default function EditQuotePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const [clientId, setClientId] = useState('')
   const [clients, setClients] = useState<Client[]>([])
+  const [quoteNumber, setQuoteNumber] = useState('')
   const [availableJobs, setAvailableJobs] = useState<Job[]>([])
   const [selectedJobIds, setSelectedJobIds] = useState<string[]>([])
   const [currency, setCurrency] = useState('$')
   const [discount, setDiscount] = useState('0')
   const [discountAmountValue, setDiscountAmountValue] = useState('0')
   const [roundToNearest, setRoundToNearest] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    fetch('/api/clients')
-      .then(res => res.json())
-      .then(data => setClients(data))
+    const fetchData = async () => {
+      const [clientsRes, allJobsRes, quoteRes, profileRes] = await Promise.all([
+        fetch('/api/clients'),
+        fetch('/api/jobs'),
+        fetch(`/api/quotes/${id}`),
+        fetch('/api/settings/profile')
+      ])
 
-    fetch('/api/jobs')
-      .then(res => res.json())
-      .then(data => setAvailableJobs(data))
+      const clientsData = await clientsRes.json()
+      const allJobsData = await allJobsRes.json()
+      const quoteData = await quoteRes.json()
+      const profileData = await profileRes.json()
 
-    fetch('/api/settings/profile')
-      .then(res => res.json())
-      .then(data => {
-        setCurrency(data?.currency || '$')
-        setRoundToNearest(!!data?.roundToNearest)
-      })
-  }, [])
+      setClients(clientsData)
+      setAvailableJobs(allJobsData)
+      setCurrency(profileData?.currency || '$')
+      setRoundToNearest(!!profileData?.roundToNearest)
+
+      if (quoteData) {
+        setQuoteNumber(quoteData.quoteNumber)
+        setClientId(quoteData.clientId)
+        setDiscount(quoteData.discount?.toString() || '0')
+        setDiscountAmountValue(quoteData.discountAmount?.toString() || '0')
+        // In the API, we need to make sure jobs are returned
+        if (quoteData.jobs) {
+          setSelectedJobIds(quoteData.jobs.map((j: any) => j.id))
+        }
+      }
+      setLoading(false)
+    }
+
+    fetchData()
+  }, [id])
 
   const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDiscount(e.target.value)
@@ -78,13 +109,15 @@ export default function NewQuotePage() {
       return
     }
 
-    setLoading(true)
-    const res = await fetch('/api/quotes', {
-      method: 'POST',
+    setSaving(true)
+    // We need an API route to update a quote. Currently we only have POST to create and DELETE.
+    // I will use PUT on /api/quotes/[id]
+    const res = await fetch(`/api/quotes/${id}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         clientId,
-        totalAmount: invoiceTotal, // Send gross total
+        totalAmount: invoiceTotal,
         discount: parseFloat(discount),
         discountAmount: parseFloat(discountAmountValue),
         jobIds: selectedJobIds,
@@ -95,10 +128,12 @@ export default function NewQuotePage() {
       router.push('/quotes')
       router.refresh()
     } else {
-      alert('Failed to create quote')
-      setLoading(false)
+      alert('Failed to update quote')
+      setSaving(false)
     }
   }
+
+  if (loading) return <div className="p-8 text-center text-slate-500">Loading Quote...</div>
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -106,68 +141,54 @@ export default function NewQuotePage() {
         <Link href="/quotes" className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
           <ArrowLeft className="h-6 w-6" />
         </Link>
-        <h1 className="text-3xl font-bold text-slate-900">Create New Quote</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Edit Quote {quoteNumber}</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-            <label className="block text-sm font-medium text-slate-700 mb-2">1. Select Client</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">1. Client</label>
             <select
-              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none bg-slate-50"
               value={clientId}
-              onChange={(e) => {
-                setClientId(e.target.value)
-                setSelectedJobIds([])
-              }}
+              disabled
               required
             >
-              <option value="">Select a client...</option>
               {clients.map(client => (
                 <option key={client.id} value={client.id}>{client.name}</option>
               ))}
             </select>
+            <p className="mt-2 text-xs text-slate-400">Client cannot be changed once a quote is created.</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-            <h2 className="text-sm font-medium text-slate-700 mb-4">2. Select Jobs to Include</h2>
-            {clientId === '' ? (
-              <div className="text-center py-8 text-slate-400 border-2 border-dashed border-slate-100 rounded-lg">
-                Please select a client first.
-              </div>
-            ) : filteredJobs.length === 0 ? (
-              <div className="text-center py-8 text-slate-400 border-2 border-dashed border-slate-100 rounded-lg">
-                No jobs found for this client.{' '}
-                <Link href="/jobs/new" className="text-theme hover:underline">Create a job</Link> first.
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {filteredJobs.map(job => (
-                  <div
-                    key={job.id}
-                    onClick={() => toggleJobSelection(job.id)}
-                    className={`flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all ${
-                      selectedJobIds.includes(job.id)
-                        ? 'bg-slate-50 border-theme ring-2 ring-theme/10'
-                        : 'bg-white border-slate-200 hover:border-theme'
-                    }`}
-                  >
-                    <div className="flex items-center">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-4 ${
-                        selectedJobIds.includes(job.id) ? 'bg-theme text-white' : 'border border-slate-300'
-                      }`}>
-                        {selectedJobIds.includes(job.id) && <Check className="h-4 w-4" />}
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900">{job.eventName}</div>
-                        <div className="text-xs text-slate-500">{new Date(job.date).toLocaleDateString()}</div>
-                      </div>
+            <h2 className="text-sm font-medium text-slate-700 mb-4">2. Included Jobs</h2>
+            <div className="space-y-3">
+              {filteredJobs.map(job => (
+                <div
+                  key={job.id}
+                  onClick={() => toggleJobSelection(job.id)}
+                  className={`flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all ${
+                    selectedJobIds.includes(job.id)
+                      ? 'bg-slate-50 border-theme ring-2 ring-theme/10'
+                      : 'bg-white border-slate-200 hover:border-theme'
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-4 ${
+                      selectedJobIds.includes(job.id) ? 'bg-theme text-white' : 'border border-slate-300'
+                    }`}>
+                      {selectedJobIds.includes(job.id) && <Check className="h-4 w-4" />}
                     </div>
-                    <div className="font-bold text-slate-900">{currency}{job.totalCost.toFixed(2)}</div>
+                    <div>
+                      <div className="font-bold text-slate-900">{job.eventName}</div>
+                      <div className="text-xs text-slate-500">{new Date(job.date).toLocaleDateString()}</div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
+                  <div className="font-bold text-slate-900">{currency}{job.totalCost.toFixed(2)}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -179,12 +200,6 @@ export default function NewQuotePage() {
               <div className="flex justify-between text-slate-600">
                 <span>Items:</span>
                 <span className="font-medium text-slate-900">{selectedJobIds.length}</span>
-              </div>
-              <div className="flex justify-between text-slate-600">
-                <span>Client:</span>
-                <span className="font-medium text-slate-900 text-right truncate ml-4">
-                  {clients.find(c => c.id === clientId)?.name || 'None'}
-                </span>
               </div>
               <div className="pt-4 border-t border-slate-100 space-y-2">
                 <div className="flex justify-between text-slate-600">
@@ -237,13 +252,13 @@ export default function NewQuotePage() {
 
             <button
               onClick={handleSubmit}
-              disabled={loading || !clientId || selectedJobIds.length === 0}
+              disabled={saving || selectedJobIds.length === 0}
               className="w-full flex items-center justify-center bg-theme opacity-90 hover:opacity-100 text-white px-6 py-4 rounded-xl transition-all font-bold shadow-lg disabled:opacity-50 disabled:shadow-none"
             >
-              {loading ? 'Creating...' : (
+              {saving ? 'Saving...' : (
                 <>
-                  <FileText className="h-5 w-5 mr-2" />
-                  Generate Quote
+                  <Save className="h-5 w-5 mr-2" />
+                  Save Changes
                 </>
               )}
             </button>

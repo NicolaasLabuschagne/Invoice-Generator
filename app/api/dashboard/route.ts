@@ -11,17 +11,12 @@ export async function GET() {
   }
 
   const [
-    totalRevenue,
     outstandingInvoices,
     totalClients,
     activeJobs,
     recentInvoices,
     profile
   ] = await Promise.all([
-    prisma.invoice.aggregate({
-      where: { userId: user.id, status: 'paid' },
-      _sum: { totalAmount: true },
-    }),
     prisma.invoice.count({
       where: { userId: user.id, status: 'unpaid' },
     }),
@@ -39,23 +34,30 @@ export async function GET() {
     }),
     prisma.profile.findUnique({
       where: { id: user.id },
-      select: { currency: true }
     })
   ])
 
+  const roundToNearest = !!profile?.roundToNearest;
+
   return NextResponse.json({
-    totalRevenue: totalRevenue._sum.totalAmount || 0,
+    totalRevenue: 0, // Removed per request
     outstandingInvoices,
     totalClients,
     activeJobs,
     currency: profile?.currency || '$',
-    recentActivity: recentInvoices.map((inv: any) => ({
-      id: inv.id,
-      type: 'invoice',
-      description: `Invoice ${inv.invoiceNumber} created for ${inv.client.name}`,
-      amount: inv.totalAmount,
-      date: inv.createdAt,
-      status: inv.status,
-    })),
+    recentActivity: recentInvoices.map((inv: any) => {
+      let netTotal = inv.totalAmount * (1 - (inv.discount || 0) / 100) - (inv.discountAmount || 0);
+      if (netTotal < 0) netTotal = 0;
+      if (roundToNearest) netTotal = Math.round(netTotal);
+
+      return {
+        id: inv.id,
+        type: 'invoice',
+        description: `Invoice ${inv.invoiceNumber} created for ${inv.client.name}`,
+        amount: netTotal,
+        date: inv.createdAt,
+        status: inv.status,
+      };
+    }),
   })
 }

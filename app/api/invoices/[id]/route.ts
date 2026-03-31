@@ -13,7 +13,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   const invoice = await prisma.invoice.findFirst({
     where: { id: id, userId: user.id },
-    include: { client: true },
+    include: { client: true, jobs: true },
   })
 
   if (!invoice) {
@@ -32,12 +32,18 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { status } = await req.json()
+  const { status, totalAmount, discount, discountAmount, jobIds } = await req.json()
 
   const invoice = await prisma.invoice.update({
     where: { id: id, userId: user.id },
     data: {
       status,
+      totalAmount: totalAmount ? parseFloat(totalAmount) : undefined,
+      discount: discount !== undefined ? parseFloat(discount) : undefined,
+      discountAmount: discountAmount !== undefined ? parseFloat(discountAmount) : undefined,
+      jobs: jobIds ? {
+        set: jobIds.map((id: string) => ({ id }))
+      } : undefined
     },
   })
 

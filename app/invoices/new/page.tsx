@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, FileText, Check, Plus, Minus } from 'lucide-react'
+import { ArrowLeft, Save, FileCheck, Check, Plus, Minus } from 'lucide-react'
 import Link from 'next/link'
 
 interface Client {
@@ -18,7 +18,7 @@ interface Job {
   clientId: string
 }
 
-export default function NewQuotePage() {
+export default function NewInvoicePage() {
   const [clientId, setClientId] = useState('')
   const [clients, setClients] = useState<Client[]>([])
   const [availableJobs, setAvailableJobs] = useState<Job[]>([])
@@ -79,23 +79,24 @@ export default function NewQuotePage() {
     }
 
     setLoading(true)
-    const res = await fetch('/api/quotes', {
+    const res = await fetch('/api/invoices', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         clientId,
-        totalAmount: invoiceTotal, // Send gross total
+        totalAmount: invoiceTotal,
         discount: parseFloat(discount),
         discountAmount: parseFloat(discountAmountValue),
+        status: 'unpaid',
         jobIds: selectedJobIds,
       }),
     })
 
     if (res.ok) {
-      router.push('/quotes')
+      router.push('/invoices')
       router.refresh()
     } else {
-      alert('Failed to create quote')
+      alert('Failed to create invoice')
       setLoading(false)
     }
   }
@@ -103,10 +104,10 @@ export default function NewQuotePage() {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center space-x-4">
-        <Link href="/quotes" className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
+        <Link href="/invoices" className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
           <ArrowLeft className="h-6 w-6" />
         </Link>
-        <h1 className="text-3xl font-bold text-slate-900">Create New Quote</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Create New Invoice</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -137,8 +138,7 @@ export default function NewQuotePage() {
               </div>
             ) : filteredJobs.length === 0 ? (
               <div className="text-center py-8 text-slate-400 border-2 border-dashed border-slate-100 rounded-lg">
-                No jobs found for this client.{' '}
-                <Link href="/jobs/new" className="text-theme hover:underline">Create a job</Link> first.
+                No jobs found for this client.
               </div>
             ) : (
               <div className="space-y-3">
@@ -173,7 +173,7 @@ export default function NewQuotePage() {
 
         <div className="space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 sticky top-8">
-            <h2 className="text-lg font-bold text-slate-900 mb-6">Quote Summary</h2>
+            <h2 className="text-lg font-bold text-slate-900 mb-6">Invoice Summary</h2>
 
             <div className="space-y-4 mb-8">
               <div className="flex justify-between text-slate-600">
@@ -242,8 +242,8 @@ export default function NewQuotePage() {
             >
               {loading ? 'Creating...' : (
                 <>
-                  <FileText className="h-5 w-5 mr-2" />
-                  Generate Quote
+                  <FileCheck className="h-5 w-5 mr-2" />
+                  Generate Invoice
                 </>
               )}
             </button>
