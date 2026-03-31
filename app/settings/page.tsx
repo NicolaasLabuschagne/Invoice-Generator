@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { Plus, Trash2, Save, Settings as SettingsIcon, Upload } from 'lucide-react'
 import { createClient } from '@/lib/supabase-client'
+import { useTheme } from '@/components/ThemeProvider'
 
 interface Setting {
   id: string
@@ -47,6 +48,7 @@ export default function SettingsPage() {
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
+  const { refreshTheme } = useTheme()
 
   useEffect(() => {
     fetchData()
@@ -116,6 +118,7 @@ export default function SettingsPage() {
         body: JSON.stringify(profile),
       })
       if (res.ok) {
+        refreshTheme()
         alert('Profile updated successfully!')
       } else {
         alert('Failed to update profile.')
@@ -174,7 +177,7 @@ export default function SettingsPage() {
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
       <div>
         <h1 className="text-3xl font-bold text-slate-900 flex items-center">
-          <SettingsIcon className="mr-3 h-8 w-8 text-blue-600" />
+          <SettingsIcon className="mr-3 h-8 w-8 text-theme" />
           Settings & Customization
         </h1>
         <p className="mt-2 text-slate-600">
@@ -193,7 +196,7 @@ export default function SettingsPage() {
                 id="companyName"
                 type="text"
                 placeholder="Service SaaS Corp"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={profile.companyName || ''}
                 onChange={(e) => setProfile({ ...profile, companyName: e.target.value })}
               />
@@ -202,7 +205,7 @@ export default function SettingsPage() {
               <label htmlFor="currency" className="block text-sm font-medium text-slate-700 mb-1">Currency Symbol</label>
               <select
                 id="currency"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={profile.currency || '$'}
                 onChange={(e) => setProfile({ ...profile, currency: e.target.value })}
               >
@@ -225,7 +228,7 @@ export default function SettingsPage() {
                 <input
                   id="themeColor"
                   type="text"
-                  className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="flex-1 px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                   value={profile.themeColor || '#2563eb'}
                   onChange={(e) => setProfile({ ...profile, themeColor: e.target.value })}
                 />
@@ -244,7 +247,7 @@ export default function SettingsPage() {
                     id="logoUrl"
                     type="text"
                     placeholder="https://example.com/logo.png"
-                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none mb-2"
+                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none mb-2"
                     value={profile.logoUrl || ''}
                     onChange={(e) => setProfile({ ...profile, logoUrl: e.target.value })}
                   />
@@ -259,7 +262,7 @@ export default function SettingsPage() {
                     type="button"
                     disabled={uploading}
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center text-sm font-semibold text-blue-600 hover:text-blue-700 disabled:opacity-50"
+                    className="flex items-center text-sm font-semibold text-theme opacity-90 hover:opacity-100 disabled:opacity-50"
                   >
                     <Upload className="h-4 w-4 mr-1" />
                     {uploading ? 'Uploading...' : 'Upload Logo'}
@@ -273,7 +276,7 @@ export default function SettingsPage() {
                 id="companyEmail"
                 type="email"
                 placeholder="contact@company.com"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={profile.companyEmail || ''}
                 onChange={(e) => setProfile({ ...profile, companyEmail: e.target.value })}
               />
@@ -284,7 +287,7 @@ export default function SettingsPage() {
                 id="companyPhone"
                 type="text"
                 placeholder="+1 (555) 000-0000"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={profile.companyPhone || ''}
                 onChange={(e) => setProfile({ ...profile, companyPhone: e.target.value })}
               />
@@ -295,7 +298,7 @@ export default function SettingsPage() {
                 id="companyAddress"
                 placeholder="123 Business St, City, Country"
                 rows={2}
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={profile.companyAddress || ''}
                 onChange={(e) => setProfile({ ...profile, companyAddress: e.target.value })}
               />
@@ -306,7 +309,7 @@ export default function SettingsPage() {
                 id="bankInfo"
                 placeholder="Account Name: ...&#10;Bank: ...&#10;Account Number: ...&#10;Branch Code: ..."
                 rows={4}
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={profile.bankInfo || ''}
                 onChange={(e) => setProfile({ ...profile, bankInfo: e.target.value })}
               />
@@ -318,7 +321,7 @@ export default function SettingsPage() {
                 id="licenceInfo"
                 placeholder="Licence nr, Registration info..."
                 rows={3}
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={profile.licenceInfo || ''}
                 onChange={(e) => setProfile({ ...profile, licenceInfo: e.target.value })}
               />
@@ -332,7 +335,7 @@ export default function SettingsPage() {
                 id="quoteTemplate"
                 placeholder="Default quote terms and conditions..."
                 rows={4}
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={profile.quoteTemplate || ''}
                 onChange={(e) => setProfile({ ...profile, quoteTemplate: e.target.value })}
               />
@@ -343,7 +346,7 @@ export default function SettingsPage() {
                 id="invoiceTemplate"
                 placeholder="Default invoice terms and conditions..."
                 rows={4}
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={profile.invoiceTemplate || ''}
                 onChange={(e) => setProfile({ ...profile, invoiceTemplate: e.target.value })}
               />
@@ -354,7 +357,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={savingProfile}
-              className="flex items-center justify-center bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50"
+              className="flex items-center justify-center bg-theme text-white px-6 py-2 rounded-lg opacity-90 hover:opacity-100 transition-colors font-semibold disabled:opacity-50"
             >
               <Save className="h-5 w-5 mr-2" />
               {savingProfile ? 'Saving...' : 'Save Profile Settings'}
@@ -373,7 +376,7 @@ export default function SettingsPage() {
               id="newItemName"
               type="text"
               placeholder="e.g. Basic Life Support"
-              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               required
@@ -386,7 +389,7 @@ export default function SettingsPage() {
               type="number"
               step="0.01"
               placeholder="0.00"
-              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
               required
@@ -396,7 +399,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50"
+              className="w-full flex items-center justify-center bg-theme text-white px-4 py-2 rounded-lg opacity-90 hover:opacity-100 transition-colors font-semibold disabled:opacity-50"
             >
               <Plus className="h-5 w-5 mr-2" />
               Add Item

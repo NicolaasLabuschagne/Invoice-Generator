@@ -97,7 +97,7 @@ export default function JobsPage() {
         </div>
         <Link
           href="/jobs/new"
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100"
+          className="flex items-center bg-theme opacity-90 hover:opacity-100 text-white px-4 py-2 rounded-lg transition-all shadow-lg"
         >
           <Plus className="h-5 w-5 mr-2" />
           Create Job
@@ -111,7 +111,7 @@ export default function JobsPage() {
             <input
               type="text"
               placeholder="Search by event name or client..."
-              className="pl-10 pr-4 py-2 w-full border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+              className="pl-10 pr-4 py-2 w-full border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -195,7 +195,7 @@ export default function JobsPage() {
                         <div className="w-px h-4 bg-slate-200 mx-1" />
                         <Link
                           href={`/jobs/${job.id}`}
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                          className="p-2 text-slate-400 hover:text-theme hover:bg-slate-100 rounded-lg transition-all"
                         >
                           <Edit className="h-5 w-5" />
                         </Link>

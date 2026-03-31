@@ -54,7 +54,7 @@ export default function ClientsPage() {
         </div>
         <Link
           href="/clients/new"
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center bg-theme opacity-90 hover:opacity-100 text-white px-4 py-2 rounded-lg transition-all shadow-md"
         >
           <Plus className="h-5 w-5 mr-2" />
           Add Client
@@ -68,7 +68,7 @@ export default function ClientsPage() {
             <input
               type="text"
               placeholder="Search by name, contact or email..."
-              className="pl-10 pr-4 py-2 w-full border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+              className="pl-10 pr-4 py-2 w-full border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -84,13 +84,13 @@ export default function ClientsPage() {
             {filteredClients.map((client) => (
               <div key={client.id} className="bg-white border border-slate-100 rounded-xl p-6 hover:shadow-md transition-all group">
                 <div className="flex justify-between items-start mb-4">
-                  <div className="bg-blue-50 p-3 rounded-lg text-blue-600">
+                  <div className="bg-theme/10 p-3 rounded-lg text-theme">
                     <User className="h-6 w-6" />
                   </div>
                   <div className="flex space-x-1">
                     <Link
                       href={`/clients/${client.id}`}
-                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                      className="p-2 text-slate-400 hover:text-theme hover:bg-theme/10 rounded-lg transition-all"
                       title="Edit Client"
                     >
                       <Edit className="h-5 w-5" />

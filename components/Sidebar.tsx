@@ -63,13 +63,13 @@ export default function Sidebar() {
         {profile?.logoUrl ? (
           <img src={profile.logoUrl} alt="Logo" className="h-12 w-auto mb-2 object-contain" />
         ) : (
-          <div className="h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center mb-2" style={{ backgroundColor: profile?.themeColor || '#2563eb' }}>
+          <div className="h-12 w-12 bg-theme rounded-lg flex items-center justify-center mb-2">
             <span className="text-xl font-bold text-white">
               {(profile?.companyName || 'S').charAt(0)}
             </span>
           </div>
         )}
-        <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent truncate w-full">
+        <h1 className="text-xl font-bold text-white opacity-90 truncate w-full">
           {profile?.companyName || 'Service SaaS'}
         </h1>
       </div>
@@ -81,10 +81,9 @@ export default function Sidebar() {
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  style={isActive ? { backgroundColor: profile?.themeColor || '#2563eb' } : {}}
                   className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
                     isActive
-                      ? 'text-white'
+                      ? 'bg-theme text-white'
                       : 'text-slate-400 hover:bg-slate-800 hover:text-white'
                   }`}
                 >

@@ -5,6 +5,7 @@
 }
 
 :root {
+  --primary-color: #2563eb;
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
@@ -13,4 +14,18 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: white;
+}
+
+@utility bg-theme {
+  background-color: var(--primary-color);
+}
+@utility text-theme {
+  color: var(--primary-color);
+}
+@utility border-theme {
+  border-color: var(--primary-color);
+}
+@utility ring-theme {
+  --tw-ring-color: var(--primary-color);
+  ring-color: var(--primary-color);
 }

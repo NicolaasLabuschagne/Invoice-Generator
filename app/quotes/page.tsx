@@ -70,7 +70,7 @@ export default function QuotesPage() {
         </div>
         <Link
           href="/quotes/new"
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center bg-theme opacity-90 hover:opacity-100 text-white px-4 py-2 rounded-lg transition-all shadow-md"
         >
           <Plus className="h-5 w-5 mr-2" />
           Create Quote
@@ -84,7 +84,7 @@ export default function QuotesPage() {
             <input
               type="text"
               placeholder="Search by quote number or client..."
-              className="pl-10 pr-4 py-2 w-full border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+              className="pl-10 pr-4 py-2 w-full border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -110,7 +110,7 @@ export default function QuotesPage() {
               <tbody className="divide-y divide-slate-100 text-slate-700">
                 {filteredQuotes.map((quote) => (
                   <tr key={quote.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-bold text-blue-600">
+                    <td className="px-6 py-4 font-bold text-theme">
                       {quote.quoteNumber}
                     </td>
                     <td className="px-6 py-4">
@@ -137,7 +137,7 @@ export default function QuotesPage() {
                           href={`/api/pdf/quote/${quote.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                          className="p-2 text-slate-400 hover:text-theme hover:bg-slate-100 rounded-lg transition-all"
                           title="Download PDF"
                         >
                           <Download className="h-5 w-5" />

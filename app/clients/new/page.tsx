@@ -59,7 +59,7 @@ export default function NewClientPage() {
               <input
                 type="text"
                 name="name"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={formData.name || ''}
                 onChange={handleChange}
                 required
@@ -70,7 +70,7 @@ export default function NewClientPage() {
               <input
                 type="text"
                 name="contactPerson"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={formData.contactPerson || ''}
                 onChange={handleChange}
                 required
@@ -81,7 +81,7 @@ export default function NewClientPage() {
               <input
                 type="email"
                 name="email"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={formData.email || ''}
                 onChange={handleChange}
                 required
@@ -92,7 +92,7 @@ export default function NewClientPage() {
               <input
                 type="tel"
                 name="phone"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={formData.phone || ''}
                 onChange={handleChange}
                 required
@@ -102,7 +102,7 @@ export default function NewClientPage() {
               <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
               <textarea
                 name="address"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={formData.address || ''}
                 onChange={handleChange}
                 required
@@ -114,7 +114,7 @@ export default function NewClientPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+              className="flex items-center bg-theme opacity-90 hover:opacity-100 text-white px-6 py-3 rounded-lg transition-all font-semibold"
             >
               {saving ? 'Saving...' : (
                 <>

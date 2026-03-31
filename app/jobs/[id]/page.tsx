@@ -137,7 +137,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
               <label className="block text-sm font-medium text-slate-700 mb-1">Select Client</label>
               <select
                 name="clientId"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={formData.clientId}
                 onChange={handleChange}
                 required
@@ -153,7 +153,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
               <input
                 type="text"
                 name="eventName"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={formData.eventName || ''}
                 onChange={handleChange}
                 required
@@ -164,7 +164,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
               <input
                 type="date"
                 name="date"
-                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                 value={formData.date || ''}
                 onChange={handleChange}
                 required
@@ -176,7 +176,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                 <input
                   type="time"
                   name="startTime"
-                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                   value={formData.startTime || ''}
                   onChange={handleChange}
                 />
@@ -186,7 +186,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                 <input
                   type="time"
                   name="endTime"
-                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                   value={formData.endTime || ''}
                   onChange={handleChange}
                 />
@@ -197,7 +197,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                 type="checkbox"
                 id="isComplete"
                 name="isComplete"
-                className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                className="w-5 h-5 rounded border-slate-300 text-theme focus:ring-theme"
                 checked={formData.isComplete}
                 onChange={handleChange}
               />
@@ -213,7 +213,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                     type="number"
                     name="medics"
                     min="1"
-                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                     value={formData.medics || ''}
                     onChange={handleChange}
                     required
@@ -226,7 +226,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                     name="hours"
                     step="0.5"
                     min="1"
-                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                     value={formData.hours || ''}
                     onChange={handleChange}
                     required
@@ -240,7 +240,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                       type="number"
                       name="hourlyRate"
                       min="0"
-                      className="pl-8 w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="pl-8 w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
                       value={formData.hourlyRate || ''}
                       onChange={handleChange}
                       required
@@ -254,7 +254,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
               <h3 className="text-lg font-bold text-slate-900 mb-4">Additional Items (from Settings)</h3>
               {settings.length === 0 ? (
                 <p className="text-sm text-slate-500 bg-slate-50 p-4 rounded-lg">
-                  No additional items configured. Go to <Link href="/settings" className="text-blue-600 hover:underline">Settings</Link> to add some.
+                  No additional items configured. Go to <Link href="/settings" className="text-theme hover:underline">Settings</Link> to add some.
                 </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -264,13 +264,13 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
                       onClick={() => toggleItem(item.id)}
                       className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all ${
                         selectedItems.includes(item.id)
-                          ? 'bg-blue-50 border-blue-200 ring-2 ring-blue-100'
-                          : 'bg-white border-slate-200 hover:border-blue-200'
+                          ? 'bg-slate-50 border-theme ring-2 ring-theme/10'
+                          : 'bg-white border-slate-200 hover:border-theme'
                       }`}
                     >
                       <div className="flex items-center">
                         {selectedItems.includes(item.id) ? (
-                          <CheckSquare className="h-5 w-5 mr-3 text-blue-600" />
+                          <CheckSquare className="h-5 w-5 mr-3 text-theme" />
                         ) : (
                           <Square className="h-5 w-5 mr-3 text-slate-300" />
                         )}
@@ -286,13 +286,13 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
 
           <div className="mt-8 p-6 bg-slate-900 rounded-xl text-white flex items-center justify-between">
             <div className="flex items-center">
-              <Calculator className="h-6 w-6 mr-3 text-blue-400" />
+              <Calculator className="h-6 w-6 mr-3 text-theme" />
               <div>
                 <p className="text-sm text-slate-400 font-medium">Estimated Total</p>
                 <p className="text-xs text-slate-500">Base: {currency}{(parseFloat(formData.medics) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)).toFixed(2)} + Items: {currency}{itemsTotal.toFixed(2)}</p>
               </div>
             </div>
-            <div className="text-3xl font-black text-blue-400">
+            <div className="text-3xl font-black text-theme">
               {currency}{isNaN(totalCost) ? '0.00' : totalCost.toFixed(2)}
             </div>
           </div>
@@ -301,7 +301,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center bg-blue-600 text-white px-8 py-4 rounded-xl hover:bg-blue-700 transition-colors font-bold shadow-lg shadow-blue-100 disabled:opacity-50"
+              className="flex items-center bg-theme opacity-90 hover:opacity-100 text-white px-8 py-4 rounded-xl transition-all font-bold shadow-lg disabled:opacity-50"
             >
               {saving ? 'Saving...' : (
                 <>

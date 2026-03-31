@@ -13,11 +13,11 @@ export default function Home() {
         <div className="mt-10 flex items-center justify-center gap-x-6">
           <Link
             href="/signup"
-            className="rounded-md bg-blue-600 px-6 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition-all"
+            className="rounded-md bg-theme px-6 py-3 text-lg font-semibold text-white shadow-sm hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:ring-theme transition-all"
           >
             Get Started
           </Link>
-          <Link href="/login" className="text-lg font-semibold leading-6 text-slate-900 hover:text-blue-600 transition-colors">
+          <Link href="/login" className="text-lg font-semibold leading-6 text-slate-900 hover:text-theme transition-colors">
             Log in <span aria-hidden="true">→</span>
           </Link>
         </div>

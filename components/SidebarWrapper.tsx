@@ -12,10 +12,10 @@ export default function SidebarWrapper({ children }: { children: React.ReactNode
   }
 
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 min-h-screen overflow-x-hidden overflow-y-auto">
-        <div className="container mx-auto px-6 py-8">
+      <main className="flex-1 h-screen overflow-y-auto bg-slate-50">
+        <div className="container mx-auto px-6 py-8 max-w-7xl">
           {children}
         </div>
       </main>

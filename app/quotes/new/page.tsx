@@ -105,7 +105,7 @@ export default function NewQuotePage() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
             <label className="block text-sm font-medium text-slate-700 mb-2">1. Select Client</label>
             <select
-              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
               value={clientId}
               onChange={(e) => {
                 setClientId(e.target.value)
@@ -129,7 +129,7 @@ export default function NewQuotePage() {
             ) : filteredJobs.length === 0 ? (
               <div className="text-center py-8 text-slate-400 border-2 border-dashed border-slate-100 rounded-lg">
                 No jobs found for this client.{' '}
-                <Link href="/jobs/new" className="text-blue-600 hover:underline">Create a job</Link> first.
+                <Link href="/jobs/new" className="text-theme hover:underline">Create a job</Link> first.
               </div>
             ) : (
               <div className="space-y-3">
@@ -139,13 +139,13 @@ export default function NewQuotePage() {
                     onClick={() => toggleJobSelection(job.id)}
                     className={`flex items-center justify-between p-4 rounded-lg border cursor-pointer transition-all ${
                       selectedJobIds.includes(job.id)
-                        ? 'bg-blue-50 border-blue-200 ring-2 ring-blue-100'
-                        : 'bg-white border-slate-200 hover:border-blue-200'
+                        ? 'bg-slate-50 border-theme ring-2 ring-theme/10'
+                        : 'bg-white border-slate-200 hover:border-theme'
                     }`}
                   >
                     <div className="flex items-center">
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-4 ${
-                        selectedJobIds.includes(job.id) ? 'bg-blue-600 text-white' : 'border border-slate-300'
+                        selectedJobIds.includes(job.id) ? 'bg-theme text-white' : 'border border-slate-300'
                       }`}>
                         {selectedJobIds.includes(job.id) && <Check className="h-4 w-4" />}
                       </div>
@@ -188,14 +188,14 @@ export default function NewQuotePage() {
                     type="number"
                     min="0"
                     max="100"
-                    className="w-20 px-2 py-1 border border-slate-200 rounded text-right focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                    className="w-20 px-2 py-1 border border-slate-200 rounded text-right focus:ring-1 focus:ring-theme focus:outline-none"
                     value={discount}
                     onChange={handleDiscountChange}
                   />
                 </div>
                 <div className="flex justify-between items-end pt-2">
                   <span className="font-bold text-slate-700">Total</span>
-                  <span className="text-2xl font-black text-blue-600">{currency}{totalAmount.toFixed(2)}</span>
+                  <span className="text-2xl font-black text-theme">{currency}{totalAmount.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -203,7 +203,7 @@ export default function NewQuotePage() {
             <button
               onClick={handleSubmit}
               disabled={loading || !clientId || selectedJobIds.length === 0}
-              className="w-full flex items-center justify-center bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors font-bold shadow-lg shadow-blue-100 disabled:opacity-50 disabled:shadow-none"
+              className="w-full flex items-center justify-center bg-theme opacity-90 hover:opacity-100 text-white px-6 py-4 rounded-xl transition-all font-bold shadow-lg disabled:opacity-50 disabled:shadow-none"
             >
               {loading ? 'Creating...' : (
                 <>

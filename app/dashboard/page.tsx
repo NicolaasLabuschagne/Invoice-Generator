@@ -48,7 +48,7 @@ export default function DashboardPage() {
 
   const stats = [
     { name: 'Outstanding Invoices', value: (data.outstandingInvoices || 0).toString(), icon: FileText, color: 'text-orange-600', bg: 'bg-orange-100' },
-    { name: 'Total Clients', value: (data.totalClients || 0).toString(), icon: Users, color: 'text-blue-600', bg: 'bg-blue-100' },
+    { name: 'Total Clients', value: (data.totalClients || 0).toString(), icon: Users, color: 'text-theme', bg: 'bg-theme/10' },
     { name: 'Total Jobs', value: (data.activeJobs || 0).toString(), icon: Briefcase, color: 'text-indigo-600', bg: 'bg-indigo-100' },
   ]
 
@@ -82,7 +82,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 p-6 bg-white rounded-xl shadow-sm border border-slate-100">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold text-slate-900">Recent Activity</h2>
-            <Link href="/invoices" className="text-sm text-blue-600 hover:underline font-medium">View all</Link>
+            <Link href="/invoices" className="text-sm text-theme hover:underline font-medium">View all</Link>
           </div>
 
           {!data.recentActivity || data.recentActivity.length === 0 ? (
@@ -120,33 +120,33 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 gap-4">
             <Link
               href="/clients/new"
-              className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-blue-200 transition-all group"
+              className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-theme transition-all group"
             >
               <div className="flex items-center">
-                <Users className="h-5 w-5 mr-3 text-slate-400 group-hover:text-blue-600" />
+                <Users className="h-5 w-5 mr-3 text-slate-400 group-hover:text-theme" />
                 <span className="font-medium text-slate-700">Add New Client</span>
               </div>
-              <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-blue-600" />
+              <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-theme" />
             </Link>
             <Link
               href="/jobs/new"
-              className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-blue-200 transition-all group"
+              className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-theme transition-all group"
             >
               <div className="flex items-center">
-                <Briefcase className="h-5 w-5 mr-3 text-slate-400 group-hover:text-blue-600" />
+                <Briefcase className="h-5 w-5 mr-3 text-slate-400 group-hover:text-theme" />
                 <span className="font-medium text-slate-700">Create New Job</span>
               </div>
-              <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-blue-600" />
+              <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-theme" />
             </Link>
             <Link
               href="/quotes/new"
-              className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-blue-200 transition-all group"
+              className="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-theme transition-all group"
             >
               <div className="flex items-center">
-                <FileText className="h-5 w-5 mr-3 text-slate-400 group-hover:text-blue-600" />
+                <FileText className="h-5 w-5 mr-3 text-slate-400 group-hover:text-theme" />
                 <span className="font-medium text-slate-700">Generate Quote</span>
               </div>
-              <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-blue-600" />
+              <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-theme" />
             </Link>
           </div>
         </div>
