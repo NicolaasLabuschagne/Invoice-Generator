@@ -21,12 +21,12 @@ export async function GET(
   if (type === 'quote') {
     data = await prisma.quote.findFirst({
       where: { id, userId: user.id },
-      include: { client: true },
+      include: { client: true, jobs: true },
     })
   } else if (type === 'invoice') {
     data = await prisma.invoice.findFirst({
       where: { id, userId: user.id },
-      include: { client: true },
+      include: { client: true, jobs: true },
     })
   } else {
     return NextResponse.json({ error: 'Invalid type' }, { status: 400 })
