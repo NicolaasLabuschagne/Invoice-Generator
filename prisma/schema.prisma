@@ -9,24 +9,24 @@ datasource db {
 }
 
 model Profile {
-  id              String          @id
-  email           String          @unique
-  logoUrl         String?         @map("logo_url")
-  themeColor      String?         @default("#2563eb") @map("theme_color")
-  companyName     String?         @map("company_name")
-  companyAddress  String?         @map("company_address")
-  companyEmail    String?         @map("company_email")
-  companyPhone    String?         @map("company_phone")
-  invoiceTemplate String?         @map("invoice_template")
-  quoteTemplate   String?         @map("quote_template")
-  bankInfo        String?         @map("bank_info")
-  licenceInfo     String?         @map("licence_info")
-  currency        String?         @default("$")
+  id              String        @id
+  email           String        @unique
+  logoUrl         String?       @map("logo_url")
+  themeColor      String?       @default("#2563eb") @map("theme_color")
+  companyName     String?       @map("company_name")
+  companyAddress  String?       @map("company_address")
+  companyEmail    String?       @map("company_email")
+  companyPhone    String?       @map("company_phone")
+  invoiceTemplate String?       @map("invoice_template")
+  quoteTemplate   String?       @map("quote_template")
+  bankInfo        String?       @map("bank_info")
+  licenceInfo     String?       @map("licence_info")
+  currency        String?       @default("$")
   clients         Client[]
   invoices        Invoice[]
   jobs            Job[]
   quotes          Quote[]
-  service_rates   service_rates[]
+  service_rates   ServiceRate[]
 
   @@map("profiles")
 }
@@ -98,17 +98,19 @@ model Invoice {
   status        String
   createdAt     DateTime @default(now()) @map("created_at")
   client        Client   @relation(fields: [clientId], references: [id])
-  user        Profile  @relation(fields: [userId], references: [id])
+  user          Profile  @relation(fields: [userId], references: [id])
   jobs          Job[]
 
   @@map("invoices")
 }
 
-model service_rates {
-  id         String   @id @default(cuid())
-  user_id    String
-  name       String
-  value      Float
-  created_at DateTime @default(now())
-  profiles   Profile  @relation(fields: [user_id], references: [id])
+model ServiceRate {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  name      String
+  value     Float
+  createdAt DateTime @default(now()) @map("created_at")
+  user      Profile  @relation(fields: [userId], references: [id])
+
+  @@map("service_rates")
 }

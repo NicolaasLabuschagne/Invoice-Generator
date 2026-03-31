@@ -250,7 +250,7 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
               <Text style={[styles.cellLast, styles.colTotal]}>Total {currency}</Text>
             </View>
             {jobs.map((job: any, index: number) => (
-              <View key={index} style={[styles.tableRow, index === jobs.length - 1 && { borderBottomWidth: 0 }]}>
+              <View key={index} style={[styles.tableRow, index === jobs.length - 1 ? { borderBottomWidth: 0 } : {}]}>
                 <Text style={[styles.cell, styles.colDate]}>{new Date(job.date).toLocaleDateString()}</Text>
                 <Text style={[styles.cell, styles.colEvent]}>{job.eventName}</Text>
                 <Text style={[styles.cell, styles.colStart]}>{job.startTime || '-'}</Text>
@@ -273,7 +273,7 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
                 <Text style={[styles.cellLast, styles.colAuxTotal]}>Total</Text>
               </View>
               {allAuxItems.map((item: any, index: number) => (
-                <View key={index} style={[styles.tableRow, index === allAuxItems.length - 1 && { borderBottomWidth: 0 }]}>
+                <View key={index} style={[styles.tableRow, index === allAuxItems.length - 1 ? { borderBottomWidth: 0 } : {}]}>
                   <Text style={[styles.cell, styles.colAux]}>{item.name}</Text>
                   <Text style={[styles.cell, styles.colUnitPrice]}>{item.value.toFixed(2)}</Text>
                   <Text style={[styles.cell, styles.colQty]}>{item.qty}</Text>
