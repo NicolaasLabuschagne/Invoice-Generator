@@ -280,12 +280,13 @@ export default function SettingsPage() {
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Bank / Payment Info</label>
               <textarea
-                placeholder="Bank Name, Acc No, Branch Code..."
-                rows={3}
+                placeholder="Account Name: ...&#10;Bank: ...&#10;Account Number: ...&#10;Branch Code: ..."
+                rows={4}
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 value={profile.bankInfo || ''}
                 onChange={(e) => setProfile({ ...profile, bankInfo: e.target.value })}
               />
+              <p className="mt-1 text-xs text-slate-500 italic">This will appear in the 'Payment Info' section of your documents.</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Licence / Footer Info</label>

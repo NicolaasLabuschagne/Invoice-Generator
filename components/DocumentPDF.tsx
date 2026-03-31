@@ -225,7 +225,14 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
           </View>
           <View style={styles.infoBox}>
             <Text style={styles.infoTitle}>Payment Info:</Text>
-            <Text>{profile?.bankInfo || 'Bank details not configured in settings.'}</Text>
+            {profile?.bankInfo ? profile.bankInfo.split('\n').map((line: string, i: number) => (
+              <Text key={i}>{line}</Text>
+            )) : <Text>Bank details not configured in settings.</Text>}
+            {type === 'Invoice' && (
+              <Text style={{ marginTop: 5, fontWeight: 'bold' }}>
+                Ref: {data.invoiceNumber}
+              </Text>
+            )}
           </View>
         </View>
 
@@ -330,9 +337,11 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            {profile?.licenceInfo || 'Medical Services Licenced under WC Gov. Ambulance Services: Licence nr: 44 (23/7/4/122)'}
-          </Text>
+          {profile?.licenceInfo ? profile.licenceInfo.split('\n').map((line: string, i: number) => (
+            <Text key={i} style={styles.footerText}>{line}</Text>
+          )) : (
+            <Text style={styles.footerText}>Medical Services Licenced under WC Gov. Ambulance Services: Licence nr: 44 (23/7/4/122)</Text>
+          )}
         </View>
       </Page>
     </Document>

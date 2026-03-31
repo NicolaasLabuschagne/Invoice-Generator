@@ -10,6 +10,7 @@ interface Quote {
   id: string
   quoteNumber: string
   totalAmount: number
+  discount: number
   createdAt: string
   client: {
     name: string
@@ -115,7 +116,7 @@ export default function QuotesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">
-                      ${quote.totalAmount.toFixed(2)}
+                      ${(quote.totalAmount * (1 - (quote.discount || 0) / 100)).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end space-x-2">

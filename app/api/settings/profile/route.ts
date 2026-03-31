@@ -38,9 +38,9 @@ export async function POST(req: Request) {
     licenceInfo
   } = await req.json()
 
-  const profile = await prisma.profile.update({
+  const profile = await prisma.profile.upsert({
     where: { id: user.id },
-    data: {
+    update: {
       logoUrl,
       themeColor,
       companyName,
@@ -52,6 +52,20 @@ export async function POST(req: Request) {
       bankInfo,
       licenceInfo,
     },
+    create: {
+      id: user.id,
+      email: user.email!,
+      logoUrl,
+      themeColor,
+      companyName,
+      companyAddress,
+      companyEmail,
+      companyPhone,
+      invoiceTemplate,
+      quoteTemplate,
+      bankInfo,
+      licenceInfo,
+    }
   })
 
   return NextResponse.json(profile)

@@ -9,6 +9,7 @@ interface Invoice {
   id: string
   invoiceNumber: string
   totalAmount: number
+  discount: number
   status: string
   createdAt: string
   client: {
@@ -117,7 +118,7 @@ export default function InvoicesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-900">
-                      ${invoice.totalAmount.toFixed(2)}
+                      ${(invoice.totalAmount * (1 - (invoice.discount || 0) / 100)).toFixed(2)}
                     </td>
                     <td className="px-6 py-4">
                       <button
