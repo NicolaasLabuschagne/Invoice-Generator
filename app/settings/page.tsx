@@ -82,19 +82,19 @@ export default function SettingsPage() {
       const filePath = `logos/${fileName}`
 
       const { data, error } = await supabase.storage
-        .from('public')
+        .from('public-img')
         .upload(filePath, file)
 
       if (error) throw error
 
       const { data: { publicUrl } } = supabase.storage
-        .from('public')
+        .from('public-img')
         .getPublicUrl(filePath)
 
       setProfile({ ...profile, logoUrl: publicUrl })
     } catch (err: any) {
       console.error('Error uploading logo:', err)
-      alert(`Failed to upload logo: ${err.message || 'Unknown error'}. \n\nPlease make sure you have a "public" bucket in Supabase storage and have set up RLS policies to allow uploads.`)
+      alert(`Failed to upload logo: ${err.message || 'Unknown error'}. \n\nPlease make sure you have a "public-img" bucket in Supabase storage and have set up RLS policies to allow uploads.`)
     } finally {
       setUploading(false)
     }
