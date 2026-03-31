@@ -360,7 +360,7 @@ export default function SettingsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
-              {settings.length === 0 ? (
+              {(!settings || settings.length === 0) ? (
                 <tr>
                   <td colSpan={3} className="px-6 py-8 text-center text-slate-400">
                     No selectable items configured yet.
@@ -368,12 +368,12 @@ export default function SettingsPage() {
                 </tr>
               ) : (
                 settings.map((setting) => (
-                  <tr key={setting.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-medium">{setting.name}</td>
-                    <td className="px-6 py-4">${setting.value.toFixed(2)}</td>
+                  <tr key={setting?.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-6 py-4 font-medium">{setting?.name}</td>
+                    <td className="px-6 py-4">${setting?.value?.toFixed(2)}</td>
                     <td className="px-6 py-4 text-right">
                       <button
-                        onClick={() => handleDelete(setting.id)}
+                        onClick={() => handleDelete(setting?.id)}
                         className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                         title="Delete Setting"
                       >
