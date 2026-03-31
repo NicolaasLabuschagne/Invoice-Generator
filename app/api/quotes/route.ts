@@ -12,6 +12,17 @@ export async function POST(req: Request) {
 
   const { clientId, totalAmount, jobIds } = await req.json()
 
+  // Verify jobIds ownership
+  if (jobIds && jobIds.length > 0) {
+    const uniqueJobIds = [...new Set(jobIds as string[])]
+    const jobsCount = await prisma.job.count({
+      where: { id: { in: uniqueJobIds }, userId: user.id }
+    })
+    if (jobsCount !== uniqueJobIds.length) {
+      return NextResponse.json({ error: 'Some jobs not found or unauthorized' }, { status: 404 })
+    }
+  }
+
   let finalClientId = clientId
   let finalTotalAmount = totalAmount
 
@@ -23,6 +34,16 @@ export async function POST(req: Request) {
     if (jobs.length > 0) {
       finalClientId = jobs[0].clientId
       finalTotalAmount = jobs.reduce((sum, job) => sum + job.totalCost, 0)
+    }
+  }
+
+  // Verify clientId ownership if provided or derived
+  if (finalClientId) {
+    const client = await prisma.client.findFirst({
+      where: { id: finalClientId, userId: user.id }
+    })
+    if (!client) {
+      return NextResponse.json({ error: 'Client not found or unauthorized' }, { status: 404 })
     }
   }
 

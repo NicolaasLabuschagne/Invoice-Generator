@@ -29,6 +29,15 @@ export async function POST(req: Request) {
 
   const { clientId, date, eventName, medics, hours, hourlyRate } = await req.json()
 
+  // Verify clientId ownership
+  const client = await prisma.client.findFirst({
+    where: { id: clientId, userId: user.id },
+  })
+
+  if (!client) {
+    return NextResponse.json({ error: 'Client not found or unauthorized' }, { status: 404 })
+  }
+
   const totalCost = medics * hours * hourlyRate
 
   const job = await prisma.job.create({
