@@ -45,6 +45,15 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
   const { clientId, date, eventName, medics, hours, hourlyRate, selectedItems, isComplete } = await req.json()
 
+  // Verify clientId ownership
+  const clientCheck = await prisma.client.findFirst({
+    where: { id: clientId, userId: user.id },
+  })
+
+  if (!clientCheck) {
+    return NextResponse.json({ error: 'Client not found or unauthorized' }, { status: 404 })
+  }
+
   const itemsTotal = Array.isArray(selectedItems)
     ? selectedItems.reduce((sum: number, item: any) => sum + (item.value || 0), 0)
     : 0
