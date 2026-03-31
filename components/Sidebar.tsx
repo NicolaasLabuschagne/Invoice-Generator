@@ -39,10 +39,10 @@ export default function Sidebar() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch('/api/settings')
+        const res = await fetch('/api/settings/profile')
         if (res.ok) {
           const data = await res.json()
-          setProfile(data.profile)
+          setProfile(data)
         }
       } catch (err) {
         console.error('Error fetching profile:', err)

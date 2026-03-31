@@ -48,15 +48,21 @@ export default function SettingsPage() {
 
   const fetchData = async () => {
     try {
-      const res = await fetch('/api/settings')
-      if (res.ok) {
-        const data = await res.json()
-        setSettings(data.settings)
-        if (data.profile) {
-          setProfile(data.profile)
+      const [settingsRes, profileRes] = await Promise.all([
+        fetch('/api/settings'),
+        fetch('/api/settings/profile')
+      ])
+
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json()
+        setSettings(Array.isArray(settingsData) ? settingsData : [])
+      }
+
+      if (profileRes.ok) {
+        const profileData = await profileRes.json()
+        if (profileData) {
+          setProfile(profileData)
         }
-      } else {
-        console.error('Failed to fetch data')
       }
     } catch (err) {
       console.error('Error fetching data:', err)
@@ -98,10 +104,10 @@ export default function SettingsPage() {
     e.preventDefault()
     setSavingProfile(true)
     try {
-      const res = await fetch('/api/settings', {
+      const res = await fetch('/api/settings/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...profile, type: 'profile' }),
+        body: JSON.stringify(profile),
       })
       if (res.ok) {
         alert('Profile updated successfully!')
