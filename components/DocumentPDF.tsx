@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
   page: {
@@ -79,23 +79,27 @@ const styles = StyleSheet.create({
 interface PDFProps {
   data: any;
   type: 'Quote' | 'Invoice';
+  profile?: any;
 }
 
-const DocumentPDF: React.FC<PDFProps> = ({ data, type }) => (
+const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>{type.toUpperCase()}</Text>
+          {profile?.logoUrl ? (
+            <Image src={profile.logoUrl} style={{ width: 60, height: 'auto', marginBottom: 10 }} />
+          ) : null}
+          <Text style={[styles.title, profile?.themeColor ? { color: profile.themeColor } : {}]}>{type.toUpperCase()}</Text>
           <Text style={{ marginTop: 4, color: '#64748b' }}>
             #{type === 'Quote' ? data.quoteNumber : data.invoiceNumber}
           </Text>
         </View>
         <View style={styles.companyInfo}>
-          <Text style={{ fontWeight: 'bold' }}>Service SaaS Corp</Text>
-          <Text>123 Service St, Business City</Text>
-          <Text>contact@servicesaas.com</Text>
-          <Text>+1 (555) 012-3456</Text>
+          <Text style={{ fontWeight: 'bold' }}>{profile?.companyName || 'Service SaaS Corp'}</Text>
+          <Text>{profile?.companyAddress || '123 Service St, Business City'}</Text>
+          <Text>{profile?.companyEmail || 'contact@servicesaas.com'}</Text>
+          <Text>{profile?.companyPhone || '+1 (555) 012-3456'}</Text>
         </View>
       </View>
 
@@ -129,7 +133,7 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type }) => (
       </View>
 
       <View style={styles.totalSection}>
-        <View style={styles.totalBox}>
+        <View style={[styles.totalBox, profile?.themeColor ? { backgroundColor: profile.themeColor } : {}]}>
           <Text style={styles.totalLabel}>Total Amount Due</Text>
           <Text style={styles.totalAmount}>${data.totalAmount.toFixed(2)}</Text>
         </View>
@@ -138,9 +142,10 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type }) => (
       <View style={{ marginTop: 60 }}>
         <Text style={styles.sectionTitle}>Terms & Conditions</Text>
         <Text style={{ color: '#64748b', lineHeight: 1.5 }}>
-          Please make payment within 30 days of receiving this {type.toLowerCase()}.
-          Quotes are valid for 15 days from the date of issue.
-          Thank you for your business!
+          {type === 'Quote'
+            ? (profile?.quoteTemplate || `Please make payment within 30 days of receiving this quote. Quotes are valid for 15 days from the date of issue. Thank you for your business!`)
+            : (profile?.invoiceTemplate || `Please make payment within 30 days of receiving this invoice. Thank you for your business!`)
+          }
         </Text>
       </View>
     </Page>
