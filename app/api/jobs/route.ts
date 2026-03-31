@@ -27,9 +27,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { clientId, date, eventName, medics, hours, startTime, endTime, hourlyRate } = await req.json()
+  const { clientId, date, eventName, quantity, hours, startTime, endTime, hourlyRate } = await req.json()
 
-  const totalCost = medics * hours * hourlyRate
+  const totalCost = quantity * hours * hourlyRate
 
   const job = await prisma.job.create({
     data: {
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       clientId,
       date: new Date(date),
       eventName,
-      medics: parseInt(medics),
+      quantity: parseInt(quantity),
       hours: parseFloat(hours),
       startTime,
       endTime,

@@ -12,15 +12,20 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   }
 
   if (id === 'new') {
+    const profile = await prisma.profile.findUnique({
+      where: { id: user.id },
+      select: { defaultHourlyRate: true }
+    })
+
     return NextResponse.json({
       clientId: '',
       date: new Date().toISOString(),
       eventName: '',
-      medics: 1,
+      quantity: 1,
       hours: 1,
       startTime: '',
       endTime: '',
-      hourlyRate: 150,
+      hourlyRate: profile?.defaultHourlyRate || 0,
     })
   }
 
@@ -45,13 +50,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { clientId, date, eventName, medics, hours, startTime, endTime, hourlyRate, selectedItems, isComplete } = await req.json()
+  const { clientId, date, eventName, quantity, hours, startTime, endTime, hourlyRate, selectedItems, isComplete } = await req.json()
 
   const itemsTotal = Array.isArray(selectedItems)
     ? selectedItems.reduce((sum: number, item: any) => sum + (item.value || 0), 0)
     : 0
 
-  const totalCost = (parseInt(medics) * parseFloat(hours) * parseFloat(hourlyRate)) + itemsTotal
+  const totalCost = (parseInt(quantity) * parseFloat(hours) * parseFloat(hourlyRate)) + itemsTotal
 
   if (id === 'new') {
     const job = await prisma.job.create({
@@ -60,7 +65,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         clientId,
         date: new Date(date),
         eventName,
-        medics: parseInt(medics),
+        quantity: parseInt(quantity),
         hours: parseFloat(hours),
         startTime,
         endTime,
@@ -79,7 +84,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       clientId,
       date: new Date(date),
       eventName,
-      medics: parseInt(medics),
+      quantity: parseInt(quantity),
       hours: parseFloat(hours),
       startTime,
       endTime,

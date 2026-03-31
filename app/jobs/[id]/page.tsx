@@ -21,11 +21,11 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
     clientId: '',
     date: '',
     eventName: '',
-    medics: '1',
+    quantity: '1',
     hours: '1',
     startTime: '',
     endTime: '',
-    hourlyRate: '150',
+    hourlyRate: '0',
     isComplete: false,
   })
   const [clients, setClients] = useState<Client[]>([])
@@ -59,7 +59,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
         clientId: jobData.clientId,
         date: jobData.date.split('T')[0],
         eventName: jobData.eventName,
-        medics: jobData.medics.toString(),
+        quantity: (jobData.quantity || 1).toString(),
         hours: jobData.hours.toString(),
         startTime: jobData.startTime || '',
         endTime: jobData.endTime || '',
@@ -138,7 +138,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
     return sum + (item?.value || 0)
   }, 0)
 
-  let totalCost = (parseFloat(formData.medics) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)) + itemsTotal
+  let totalCost = (parseFloat(formData.quantity) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)) + itemsTotal
   if (roundToNearest) totalCost = Math.round(totalCost)
 
   if (loading) return <div className="p-8 text-center text-slate-500">Loading...</div>
@@ -233,14 +233,14 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
               <h3 className="text-lg font-bold text-slate-900 mb-4">Base Billing</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label htmlFor="medics" className="block text-sm font-medium text-slate-700 mb-1">Medics (Count)</label>
+                  <label htmlFor="quantity" className="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
                   <input
-                    id="medics"
+                    id="quantity"
                     type="number"
-                    name="medics"
+                    name="quantity"
                     min="1"
                     className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
-                    value={formData.medics || ''}
+                    value={formData.quantity || ''}
                     onChange={handleChange}
                     required
                   />
@@ -317,7 +317,7 @@ export default function EditJobPage({ params }: { params: Promise<{ id: string }
               <Calculator className="h-6 w-6 mr-3 text-theme" />
               <div>
                 <p className="text-sm text-slate-400 font-medium">Estimated Total</p>
-                <p className="text-xs text-slate-500">Base: {currency}{(parseFloat(formData.medics) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)).toFixed(2)} + Items: {currency}{itemsTotal.toFixed(2)}</p>
+                <p className="text-xs text-slate-500">Base: {currency}{(parseFloat(formData.quantity) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)).toFixed(2)} + Items: {currency}{itemsTotal.toFixed(2)}</p>
               </div>
             </div>
             <div className="text-3xl font-black text-theme">

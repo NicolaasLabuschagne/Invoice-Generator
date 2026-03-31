@@ -86,14 +86,14 @@ const styles = StyleSheet.create({
   colStart: { width: '10%' },
   colEnd: { width: '10%' },
   colRate: { width: '12%', textAlign: 'right' },
-  colMedics: { width: '8%', textAlign: 'center' },
+  colQty: { width: '8%', textAlign: 'center' },
   colHrs: { width: '10%', textAlign: 'center' },
   colTotal: { width: '13%', textAlign: 'right' },
 
   // Auxiliary Table Columns
   colAux: { width: '57%' },
   colUnitPrice: { width: '15%', textAlign: 'right' },
-  colQty: { width: '13%', textAlign: 'center' },
+  colAuxQty: { width: '13%', textAlign: 'center' },
   colAuxTotal: { width: '15%', textAlign: 'right' },
 
   totalsArea: {
@@ -209,8 +209,7 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
               <Text>{profile?.companyAddress || '123 Service St, Business City'}</Text>
               <Text>Cell: {profile?.companyPhone || '+1 (555) 012-3456'}</Text>
               <Text>Email: {profile?.companyEmail || 'contact@servicesaas.com'}</Text>
-              <Text>Private Ambulance Services</Text>
-              <Text>{profile?.licenceInfo || 'Licence nr: WCPG44'}</Text>
+              {profile?.licenceInfo && <Text>{profile.licenceInfo}</Text>}
             </View>
           </View>
 
@@ -248,7 +247,7 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
               <Text style={[styles.cell, styles.colStart]}>Start</Text>
               <Text style={[styles.cell, styles.colEnd]}>End</Text>
               <Text style={[styles.cell, styles.colRate]}>{currency} / Hr</Text>
-              <Text style={[styles.cell, styles.colMedics]}>Medics</Text>
+              <Text style={[styles.cell, styles.colQty]}>Qty</Text>
               <Text style={[styles.cell, styles.colHrs]}>Hrs</Text>
               <Text style={[styles.cellLast, styles.colTotal]}>Total {currency}</Text>
             </View>
@@ -259,9 +258,9 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
                 <Text style={[styles.cell, styles.colStart]}>{job.startTime || '-'}</Text>
                 <Text style={[styles.cell, styles.colEnd]}>{job.endTime || '-'}</Text>
                 <Text style={[styles.cell, styles.colRate]}>{job.hourlyRate.toFixed(2)}</Text>
-                <Text style={[styles.cell, styles.colMedics]}>{job.medics}</Text>
+                <Text style={[styles.cell, styles.colQty]}>{job.quantity}</Text>
                 <Text style={[styles.cell, styles.colHrs]}>{job.hours.toFixed(2)}</Text>
-                <Text style={[styles.cellLast, styles.colTotal]}>{(job.medics * job.hours * job.hourlyRate).toFixed(2)}</Text>
+                <Text style={[styles.cellLast, styles.colTotal]}>{(job.quantity * job.hours * job.hourlyRate).toFixed(2)}</Text>
               </View>
             ))}
           </View>
@@ -272,14 +271,14 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
               <View style={styles.tableHeader}>
                 <Text style={[styles.cell, styles.colAux]}>Auxiliary Items</Text>
                 <Text style={[styles.cell, styles.colUnitPrice]}>Unit Price</Text>
-                <Text style={[styles.cell, styles.colQty]}>Qty</Text>
+                <Text style={[styles.cell, styles.colAuxQty]}>Qty</Text>
                 <Text style={[styles.cellLast, styles.colAuxTotal]}>Total</Text>
               </View>
               {allAuxItems.map((item: any, index: number) => (
                 <View key={index} style={[styles.tableRow, index === allAuxItems.length - 1 ? { borderBottomWidth: 0 } : {}]}>
                   <Text style={[styles.cell, styles.colAux]}>{item.name}</Text>
                   <Text style={[styles.cell, styles.colUnitPrice]}>{item.value.toFixed(2)}</Text>
-                  <Text style={[styles.cell, styles.colQty]}>{item.qty}</Text>
+                  <Text style={[styles.cell, styles.colAuxQty]}>{item.qty}</Text>
                   <Text style={[styles.cellLast, styles.colAuxTotal]}>{item.total.toFixed(2)}</Text>
                 </View>
               ))}
@@ -328,9 +327,7 @@ const DocumentPDF: React.FC<PDFProps> = ({ data, type, profile }) => {
           <View style={styles.footer}>
             {profile?.licenceInfo ? profile.licenceInfo.split('\n').map((line: string, i: number) => (
               <Text key={i} style={styles.footerText}>{line}</Text>
-            )) : (
-              <Text style={styles.footerText}>Medical Services Licenced under WC Gov. Ambulance Services: Licence nr: 44 (23/7/4/122)</Text>
-            )}
+            )) : null}
           </View>
         </View>
       </Page>

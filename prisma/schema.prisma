@@ -21,9 +21,9 @@ model Profile {
   quoteTemplate   String?       @map("quote_template")
   bankInfo        String?       @map("bank_info")
   licenceInfo     String?       @map("licence_info")
-  currency        String?       @default("$")
-  medicHourlyRate Float?          @default(150) @map("medic_hourly_rate")
-  roundToNearest  Boolean         @default(false) @map("round_to_nearest")
+  currency          String?       @default("$")
+  defaultHourlyRate Float?        @default(0) @map("default_hourly_rate")
+  roundToNearest    Boolean       @default(false) @map("round_to_nearest")
   clients         Client[]
   invoices        Invoice[]
   jobs            Job[]
@@ -58,7 +58,7 @@ model Job {
   invoiceId     String?  @map("invoice_id")
   date          DateTime
   eventName     String   @map("event_name")
-  medics        Int
+  quantity      Int      @default(1)
   hours         Float
   startTime     String?  @map("start_time")
   endTime       String?  @map("end_time")

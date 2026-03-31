@@ -21,11 +21,11 @@ export default function NewJobPage() {
     clientId: '',
     date: new Date().toISOString().split('T')[0],
     eventName: '',
-    medics: '1',
+    quantity: '1',
     hours: '1',
     startTime: '',
     endTime: '',
-    hourlyRate: '150',
+    hourlyRate: '0',
     isComplete: false,
   })
   const [clients, setClients] = useState<Client[]>([])
@@ -49,8 +49,8 @@ export default function NewJobPage() {
       setClients(clientsData)
       setSettings(settingsData)
       setCurrency(profileData?.currency || '$')
-      if (profileData?.medicHourlyRate) {
-        setFormData(prev => ({ ...prev, hourlyRate: profileData.medicHourlyRate.toString() }))
+      if (profileData?.defaultHourlyRate) {
+        setFormData(prev => ({ ...prev, hourlyRate: profileData.defaultHourlyRate.toString() }))
       }
       setLoading(false)
     }
@@ -118,7 +118,7 @@ export default function NewJobPage() {
     return sum + (item?.value || 0)
   }, 0)
 
-  const totalCost = (parseFloat(formData.medics) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)) + itemsTotal
+  const totalCost = (parseFloat(formData.quantity) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)) + itemsTotal
 
   if (loading) return <div className="p-8 text-center text-slate-500">Loading...</div>
 
@@ -212,14 +212,14 @@ export default function NewJobPage() {
               <h3 className="text-lg font-bold text-slate-900 mb-4">Base Billing</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label htmlFor="medics" className="block text-sm font-medium text-slate-700 mb-1">Medics (Count)</label>
+                  <label htmlFor="quantity" className="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
                   <input
-                    id="medics"
+                    id="quantity"
                     type="number"
-                    name="medics"
+                    name="quantity"
                     min="1"
                     className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
-                    value={formData.medics || ''}
+                    value={formData.quantity || ''}
                     onChange={handleChange}
                     required
                   />
@@ -296,7 +296,7 @@ export default function NewJobPage() {
               <Calculator className="h-6 w-6 mr-3 text-theme" />
               <div>
                 <p className="text-sm text-slate-400 font-medium">Estimated Total</p>
-                <p className="text-xs text-slate-500">Base: {currency}{(parseFloat(formData.medics) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)).toFixed(2)} + Items: {currency}{itemsTotal.toFixed(2)}</p>
+                <p className="text-xs text-slate-500">Base: {currency}{(parseFloat(formData.quantity) * parseFloat(formData.hours) * parseFloat(formData.hourlyRate)).toFixed(2)} + Items: {currency}{itemsTotal.toFixed(2)}</p>
               </div>
             </div>
             <div className="text-3xl font-black text-theme">

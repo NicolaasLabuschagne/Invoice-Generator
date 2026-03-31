@@ -6,7 +6,7 @@ A production-ready SaaS web application built with Next.js, Supabase, and Prisma
 
 - **Authentication**: Secure login/signup with Supabase Auth and automatic Profile sync.
 - **Client Management**: Full CRM to manage your customer database with data isolation.
-- **Job/Event Tracking**: Track service jobs with automatic cost calculation (`medics * hours * rate`).
+- **Job/Event Tracking**: Track service jobs with automatic cost calculation (`quantity * hours * rate`).
 - **Quote Generator**: Create itemized quotes from service jobs with automatic numbering (Q-0001).
 - **Invoice System**: Convert quotes to invoices or create them manually with status tracking (INV-0001).
 - **PDF Export**: Generate professional, itemized PDFs for quotes and invoices using `@react-pdf/renderer`.

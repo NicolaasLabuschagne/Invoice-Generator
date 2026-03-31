@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     bankInfo,
     licenceInfo,
     currency,
-    medicHourlyRate,
+    defaultHourlyRate,
     roundToNearest
   } = await req.json()
 
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       bankInfo,
       licenceInfo,
       currency,
-      medicHourlyRate: parseFloat(medicHourlyRate),
+      defaultHourlyRate: parseFloat(defaultHourlyRate),
       roundToNearest: Boolean(roundToNearest),
     },
     create: {
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       bankInfo,
       licenceInfo,
       currency,
-      medicHourlyRate: parseFloat(medicHourlyRate),
+      defaultHourlyRate: parseFloat(defaultHourlyRate),
       roundToNearest: Boolean(roundToNearest),
     }
   })

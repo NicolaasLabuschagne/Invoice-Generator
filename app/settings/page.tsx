@@ -23,7 +23,7 @@ interface Profile {
   bankInfo: string | null
   licenceInfo: string | null
   currency: string | null
-  medicHourlyRate: number | null
+  defaultHourlyRate: number | null
   roundToNearest: boolean
 }
 
@@ -41,7 +41,7 @@ export default function SettingsPage() {
     bankInfo: '',
     licenceInfo: '',
     currency: '$',
-    medicHourlyRate: 150,
+    defaultHourlyRate: 0,
     roundToNearest: false,
   })
   const [loading, setLoading] = useState(true)
@@ -221,14 +221,14 @@ export default function SettingsPage() {
               </select>
             </div>
             <div>
-              <label htmlFor="medicHourlyRate" className="block text-sm font-medium text-slate-700 mb-1">Default Medic Hourly Rate ({profile.currency || '$'})</label>
+              <label htmlFor="defaultHourlyRate" className="block text-sm font-medium text-slate-700 mb-1">Default Hourly Rate ({profile.currency || '$'})</label>
               <input
-                id="medicHourlyRate"
+                id="defaultHourlyRate"
                 type="number"
                 step="0.01"
                 className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-theme focus:outline-none"
-                value={profile.medicHourlyRate || ''}
-                onChange={(e) => setProfile({ ...profile, medicHourlyRate: parseFloat(e.target.value) || 0 })}
+                value={profile.defaultHourlyRate || ''}
+                onChange={(e) => setProfile({ ...profile, defaultHourlyRate: parseFloat(e.target.value) || 0 })}
               />
             </div>
             <div className="flex items-center space-x-3 pt-6">
