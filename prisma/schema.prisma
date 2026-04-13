@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Profile {
+  id    String @id
+  email String @unique
+
+  clients  Client[]
+  jobs     Job[]
+  quotes   Quote[]
+  invoices Invoice[]
+  serviceRates ServiceRate[]
+
+  @@map("profiles")
+}
+
+model Client {
+  id             String   @id @default(cuid())
+  userId         String   @map("user_id")
+  name           String
+  contactPerson  String   @map("contact_person")
+  phone          String
+  email          String
+  address        String
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user     Profile   @relation(fields: [userId], references: [id])
+  jobs     Job[]
+  quotes   Quote[]
+  invoices Invoice[]
+
+  @@map("clients")
+}
+
+model Job {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  clientId    String   @map("client_id")
+  quoteId     String?  @map("quote_id")
+  invoiceId   String?  @map("invoice_id")
+  date        DateTime
+  eventName   String   @map("event_name")
+  medics      Int
+  hours       Float
+  hourlyRate  Float    @map("hourly_rate")
+  totalCost   Float    @map("total_cost")
+  selectedItems Json?   @map("selected_items")
+  isComplete  Boolean  @default(false) @map("is_complete")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user    Profile  @relation(fields: [userId], references: [id])
+  client  Client   @relation(fields: [clientId], references: [id])
+  quote   Quote?   @relation(fields: [quoteId], references: [id])
+  invoice Invoice? @relation(fields: [invoiceId], references: [id])
+
+  @@map("jobs")
+}
+
+model Quote {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  clientId    String   @map("client_id")
+  quoteNumber String   @map("quote_number")
+  totalAmount Float    @map("total_amount")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user   Profile @relation(fields: [userId], references: [id])
+  client Client  @relation(fields: [clientId], references: [id])
+  jobs   Job[]
+
+  @@map("quotes")
+}
+
+model Invoice {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  clientId      String   @map("client_id")
+  invoiceNumber String   @map("invoice_number")
+  totalAmount   Float    @map("total_amount")
+  status        String   // paid/unpaid
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user   Profile @relation(fields: [userId], references: [id])
+  client Client  @relation(fields: [clientId], references: [id])
+  jobs   Job[]
+
+  @@map("invoices")
+}
+
+model ServiceRate {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  name      String
+  value     Float
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user Profile @relation(fields: [userId], references: [id])
+
+  @@map("service_rates")
+}
